@@ -19,7 +19,8 @@ const { width, height } = Dimensions.get("window");
 const c = vec(width / 2, height / 2);
 
 const source = Skia.RuntimeEffect.Make(`
-uniform float2 c;
+uniform float cx;
+uniform float cy;
 uniform float r;
 
 ${ShaderLib.Math}
@@ -30,6 +31,7 @@ float quadraticIn(float t) {
 }
 
 half4 main(vec2 uv) { 
+  float2 c = vec2(cx, cy);
   float mag = distance(uv, c);
   float theta = normalizeRad(canvas2Polar(uv, c).x);
   return hsv2rgb(vec3(theta/TAU, quadraticIn(mag/r), 1.0));
@@ -50,7 +52,7 @@ export const Hue = () => {
       <Fill color="#1f1f1f" />
       <Paint>
         <BlurMask sigma={40} style="solid" />
-        <Shader source={source} uniforms={{ c, r }} />
+        <Shader source={source} uniforms={[c.x, c.y, r]} />
       </Paint>
       <Circle c={c} r={r} />
       <Circle
