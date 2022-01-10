@@ -27,6 +27,7 @@
 #include "JsiSkShaderFactory.h"
 #include "JsiSkSvg.h"
 #include "JsiSkTypeface.h"
+#include "JsiSkFontMgrFactory.h"
 
 namespace RNSkia {
 
@@ -54,6 +55,8 @@ public:
     // Static members
     installReadonlyProperty("ImageFilter",
                             std::make_shared<JsiSkImageFilterFactory>(context));
+    installReadonlyProperty("FontMgr",
+                            std::make_shared<JsiSkFontMgrFactory>(context));
     installReadonlyProperty("PathEffect",
                             std::make_shared<JsiSkPathEffectFactory>(context));
     installReadonlyProperty("Path",
