@@ -10,6 +10,8 @@ import {
   LinearGradient,
   Paint,
   Text,
+  Group,
+  Fill,
 } from "@shopify/react-native-skia";
 import React from "react";
 import { Dimensions } from "react-native";
@@ -22,34 +24,21 @@ const CARD_WIDTH = width - 64;
 const CARD_HEIGHT = CARD_WIDTH * 0.61;
 const clip = rrect(rect(0, 0, CARD_WIDTH, CARD_HEIGHT), 20, 20);
 
+const x = (width - CARD_WIDTH) / 2;
+const y = (height - CARD_HEIGHT) / 2;
 export const Glassmorphism = () => {
-  const x = useValue((width - CARD_WIDTH) / 2);
-  const y = useValue((height - CARD_HEIGHT) / 2);
-  const offsetX = useValue(0);
-  const offsetY = useValue(0);
-  const onTouch = useTouchHandler({
-    onStart: (pos) => {
-      offsetX.value = x.value - pos.x;
-      offsetY.value = y.value - pos.y;
-    },
-    onActive: (pos) => {
-      x.value = offsetX.value + pos.x;
-      y.value = offsetY.value + pos.y;
-    },
-  });
   return (
-    <Canvas style={{ flex: 1 }} onTouch={onTouch}>
+    <Canvas style={{ flex: 1 }}>
       <Background />
       <Ball r={100} c={vec(75, 75)} />
       <Ball r={50} c={vec(width, height / 2)} />
       <Ball r={100} c={vec(150, height - 200)} />
       <Ball r={75} c={vec(300, height / 2 - 200)} />
-      <BackdropBlur
+      <Group
         clip={clip}
-        intensity={15}
-        color="rgba(255, 255, 255, 0.1)"
-        transform={() => [{ translateY: y.value }, { translateX: x.value }]}
+        transform={() => [{ translateY: y }, { translateX: x }]}
       >
+        <Fill color="rgba(255, 255, 255, 0.5)" />
         <Paint>
           <LinearGradient
             start={vec(0, 0)}
@@ -96,7 +85,7 @@ export const Glassmorphism = () => {
           size={18}
           familyName="source-sans-pro-semi-bold"
         />
-      </BackdropBlur>
+      </Group>
     </Canvas>
   );
 };
