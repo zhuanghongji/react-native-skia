@@ -15,6 +15,8 @@ import {
   Offset,
   Blur,
   useDerivedValue,
+  BackdropBlur,
+  Group,
 } from "@shopify/react-native-skia";
 import React from "react";
 import { Dimensions } from "react-native";
@@ -37,24 +39,17 @@ export const Glassmorphism = () => {
   return (
     <Canvas style={{ flex: 1 }}>
       <Fill color="black" />
-      <Paint>
-        <LinearGradient
-          start={start}
-          end={end}
-          colors={["#FFF723", "#E70696"]}
-        />
-      </Paint>
-      <Circle c={c} r={() => mix(progress.value, r, r / 2)} />
-      <BackdropFilter clip={rect}>
-        <Blur sigmaX={2} sigmaY={2}>
-          <Offset x={-5} y={0}>
-            <DisplacementMap channelX="r" channelY="a" scale={20}>
-              <Turbulence freqX={0.01} freqY={0.05} octaves={2} />
-            </DisplacementMap>
-          </Offset>
-        </Blur>
-        <Fill color="rgba(0, 0, 0, 0.3)" />
-      </BackdropFilter>
+      <Group>
+        <Paint>
+          <LinearGradient
+            start={start}
+            end={end}
+            colors={["#FFF723", "#E70696"]}
+          />
+        </Paint>
+        <Circle c={c} r={() => mix(progress.value, r, r / 2)} />
+      </Group>
+      <BackdropBlur intensity={20} clip={rect} />
     </Canvas>
   );
 };
