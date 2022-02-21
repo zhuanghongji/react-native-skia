@@ -6,6 +6,7 @@ import React, {
   useContext,
   forwardRef,
   useRef,
+  createContext,
 } from "react";
 import type {
   RefObject,
@@ -28,6 +29,12 @@ import { CanvasNode } from "./nodes/Canvas";
 import { vec } from "./processors";
 import { popDrawingContext, pushDrawingContext } from "./CanvasProvider";
 import type { DrawingContext } from "./DrawingContext";
+
+interface SkiaContext {
+  ref: RefObject<SkiaView>;
+}
+
+const SkiaContext = createContext<SkiaContext | null>(null);
 
 // useContextBridge() is taken from https://github.com/pmndrs/drei#usecontextbridge
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +76,14 @@ const render = (
 
 export const useCanvasRef = () => useRef<SkiaView>(null);
 
+export const useSkia = () => {
+  const skia = useContext(SkiaContext);
+  if (!skia) {
+    throw new Error("Skia context is not available");
+  }
+  return skia;
+};
+
 export interface CanvasProps extends ComponentProps<typeof SkiaView> {
   ref?: RefObject<SkiaView>;
   children: ReactNode;
@@ -90,8 +105,15 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
 
     // Render effect
     useEffect(() => {
-      render(children, container, redraw);
-    }, [children, container, redraw]);
+      render(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        <SkiaContext.Provider value={ref as any}>
+          {children}
+        </SkiaContext.Provider>,
+        container,
+        redraw
+      );
+    }, [children, container, redraw, ref]);
 
     // Draw callback
     const onDraw = useDrawCallback(

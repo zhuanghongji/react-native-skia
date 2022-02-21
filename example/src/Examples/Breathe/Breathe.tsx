@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import type { AnimationValue } from "@shopify/react-native-skia";
 import {
   BlurMask,
   vec,
@@ -12,7 +11,6 @@ import {
   polar2Canvas,
   Easing,
   mix,
-  useLoop,
 } from "@shopify/react-native-skia";
 
 const { width, height } = Dimensions.get("window");
@@ -23,7 +21,7 @@ const center = vec(width / 2, height / 2 - 64);
 
 interface RingProps {
   index: number;
-  progress: AnimationValue<number>;
+  progress: AnimatedValue<number>;
 }
 
 const Ring = ({ index, progress }: RingProps) => {
