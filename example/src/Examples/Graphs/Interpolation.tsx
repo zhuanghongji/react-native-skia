@@ -4,13 +4,13 @@ import {
   LinearGradient,
   Paint,
   Path,
-  Spring,
+  runTiming,
+  useDerivedValue,
   useValue,
   vec,
 } from "@shopify/react-native-skia";
-import { runSpring } from "@shopify/react-native-skia/src/animation/Animation/functions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Easing, StyleSheet, Text, View } from "react-native";
 
 import { createGraphPath } from "./createGraphPath";
 import type { GraphProps } from "./types";
@@ -20,6 +20,7 @@ export const Interpolation: React.FC<GraphProps> = ({ height, width }) => {
     () => createGraphPath(width, height, 60),
     [height, width]
   );
+
   const path2 = useMemo(
     () => createGraphPath(width, height, 60),
     [height, width]
@@ -29,8 +30,16 @@ export const Interpolation: React.FC<GraphProps> = ({ height, width }) => {
   const [toggled, setToggled] = useState(false);
   const onPress = useCallback(() => setToggled((p) => !p), []);
   useEffect(() => {
-    runSpring(progress, toggled ? 1 : 0, Spring.Config.Gentle);
+    runTiming(progress, toggled ? 1 : 0, {
+      duration: 500,
+      easing: Easing.inOut(Easing.cubic),
+    });
   }, [progress, toggled]);
+
+  const interpolatedPath = useDerivedValue(
+    (p) => path.interpolate(path2, p),
+    [progress]
+  );
 
   return (
     <View style={{ height, marginBottom: 10 }} onTouchEnd={onPress}>
@@ -44,7 +53,7 @@ export const Interpolation: React.FC<GraphProps> = ({ height, width }) => {
           />
         </Paint>
         <Path
-          path={() => path.interpolate(path2, progress.value)}
+          path={interpolatedPath}
           strokeWidth={4}
           style="stroke"
           strokeJoin="round"

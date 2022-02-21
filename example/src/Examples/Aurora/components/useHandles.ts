@@ -1,7 +1,4 @@
-import type {
-  AnimationValue,
-  CubicBezierHandle,
-} from "@shopify/react-native-skia";
+import type { Value, CubicBezierHandle } from "@shopify/react-native-skia";
 import { sub, useTouchHandler, useValue } from "@shopify/react-native-skia";
 
 import { inRadius, symmetric } from "./Math";
@@ -12,7 +9,7 @@ type TouchSelection = null | {
 };
 
 export const useHandles = (
-  mesh: AnimationValue<CubicBezierHandle[]>,
+  mesh: Value<CubicBezierHandle[]>,
   defaultMesh: CubicBezierHandle[],
   width: number,
   height: number

@@ -1,16 +1,13 @@
 import React from "react";
-import type {
-  AnimationValue,
-  CubicBezierHandle,
-} from "@shopify/react-native-skia";
+import type { Value, CubicBezierHandle } from "@shopify/react-native-skia";
 import { Line, Paint, Circle } from "@shopify/react-native-skia";
 
 import { symmetric } from "./Math";
 
 interface CubicProps {
-  mesh: AnimationValue<CubicBezierHandle[]>;
+  mesh: Value<CubicBezierHandle[]>;
   index: number;
-  color: number;
+  color: string;
 }
 
 export const Cubic = ({ mesh, index, color }: CubicProps) => {

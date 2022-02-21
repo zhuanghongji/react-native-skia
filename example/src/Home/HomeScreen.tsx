@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 
 import { HomeScreenButton } from "./HomeScreenButton";
 
 export const HomeScreen = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <HomeScreenButton title="API" description="API examples" route="API" />
       <HomeScreenButton
         title="🧘 Breathe"
@@ -57,7 +57,7 @@ export const HomeScreen = () => {
         description="Animated with Skia"
         route="Animation"
       />
-    </View>
+    </ScrollView>
   );
 };
 

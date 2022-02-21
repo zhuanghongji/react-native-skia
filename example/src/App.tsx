@@ -3,15 +3,19 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "react-native";
 
-import { AnimationExample, DrawingExample, GraphsScreen } from "./Examples";
-import { API } from "./Examples/API";
-import { Breathe } from "./Examples/Breathe";
-import { Filters } from "./Examples/Filters";
-import { Gooey } from "./Examples/Gooey";
-import { Hue } from "./Examples/Hue";
-import { Matrix } from "./Examples/Matrix";
-import { Aurora } from "./Examples/Aurora";
-import { Glassmorphism } from "./Examples/Glassmorphism";
+import {
+  AnimationExample,
+  API,
+  Aurora,
+  Breathe,
+  DrawingExample,
+  Filters,
+  Gooey,
+  GraphsScreen,
+  Hue,
+  Matrix,
+  Glassmorphism,
+} from "./Examples";
 import { HomeScreen } from "./Home";
 
 const App = () => {

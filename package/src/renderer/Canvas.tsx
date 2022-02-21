@@ -21,12 +21,12 @@ import { SkiaView, useDrawCallback } from "../views";
 import type { TouchHandler } from "../views";
 import { Skia } from "../skia";
 import type { FontMgr } from "../skia/FontMgr/FontMgr";
+import type { ReadonlyValue } from "../values";
 
 import { debug as hostDebug, skHostConfig } from "./HostConfig";
 import { CanvasNode } from "./nodes/Canvas";
 // import { debugTree } from "./nodes";
-import { vec } from "./processors";
-import { popDrawingContext, pushDrawingContext } from "./CanvasProvider";
+import { vec, isAnimationValue } from "./processors";
 import type { DrawingContext } from "./DrawingContext";
 
 // useContextBridge() is taken from https://github.com/pmndrs/drei#usecontextbridge
@@ -87,6 +87,32 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
       () => skiaReconciler.createContainer(tree, 0, false, null),
       [tree]
     );
+    // Add subscription to values in all child properties
+    useEffect(() => {
+      const subscriptions: Array<() => void> = [];
+      const enumChildren = (c: React.ReactNode) => {
+        React.Children.forEach(c, (child) => {
+          if (React.isValidElement(child)) {
+            // Look for AnimationValues
+            Object.keys(child.props).forEach((key) => {
+              if (key === "children") {
+                enumChildren(child.props.children);
+              } else if (isAnimationValue(child.props[key])) {
+                const value = child.props[key] as ReadonlyValue<unknown>;
+                const unsub =
+                  (typeof ref !== "function" &&
+                    ref.current?.registerValue(value)) ||
+                  (() => {});
+                subscriptions.push(unsub);
+              }
+            });
+          }
+        });
+      };
+      enumChildren(children);
+      // Unsub
+      return () => subscriptions.forEach((sub) => sub());
+    }, [children, ref]);
 
     // Render effect
     useEffect(() => {
@@ -118,9 +144,7 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
           center: vec(width / 2, height / 2),
           fontMgr: fontMgr ?? Skia.FontMgr.RefDefault(),
         };
-        pushDrawingContext(ctx);
         tree.draw(ctx, tree.props, tree.children);
-        popDrawingContext();
       },
       [tick, onTouch]
     );

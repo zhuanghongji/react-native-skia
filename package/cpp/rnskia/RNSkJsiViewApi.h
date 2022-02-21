@@ -3,6 +3,7 @@
 #include <JsiHostObject.h>
 #include <RNSkDrawView.h>
 #include <RNSkPlatformContext.h>
+#include <RNSkValue.h>
 #include <jsi/jsi.h>
 
 namespace RNSkia {
@@ -142,11 +143,43 @@ public:
     }
     return jsi::Value::undefined();
   }
-
+  
+  JSI_HOST_FUNCTION(registerValueInView) {
+    // Check params
+    if(!arguments[1].isObject() || !arguments[1].asObject(runtime).isHostObject(runtime)) {
+      jsi::detail::throwJSError(runtime, "Expected Value object as second parameter");
+      return jsi::Value::undefined();
+    }
+    
+    int nativeId = arguments[0].asNumber();
+    
+    auto value = arguments[1].asObject(runtime).asHostObject<RNSkReadonlyValue>(runtime);
+    if(value == nullptr) {
+      jsi::detail::throwJSError(runtime, "Expected Value object as second parameter");
+      return jsi::Value::undefined();
+    }
+    
+    // Add change listener
+    auto unsubscribe = value->addListener([this, nativeId](jsi::Runtime&){
+      requestRedrawView(nativeId);
+    });
+    
+    // Add listener
+    return jsi::Function::createFromHostFunction(runtime,
+                                                 jsi::PropNameID::forUtf8(runtime, "unsubscribe"),
+                                                 0,
+                                                 JSI_HOST_FUNCTION_LAMBDA {
+      // decrease dependency count on the Skia View
+      unsubscribe();
+      return jsi::Value::undefined();
+    });
+  }
+  
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawCallback),
                        JSI_EXPORT_FUNC(RNSkJsiViewApi, invalidateSkiaView),
                        JSI_EXPORT_FUNC(RNSkJsiViewApi, makeImageSnapshot),
-                       JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawMode))
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawMode),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, registerValueInView))
 
   /**
    * Constructor
@@ -236,10 +269,20 @@ private:
     }
     return &_callbackInfos.at(nativeId);
   }
-
+  
+  /**
+    Send a redraw request to the view
+   */
+  void requestRedrawView(size_t nativeId) {
+    auto info = getEnsuredCallbackInfo(nativeId);
+    if(info->view != nullptr) {
+      info->view->requestRedraw();
+    }
+  }
+  
   // List of callbacks
   std::map<size_t, CallbackInfo> _callbackInfos;
-
+  
   // Platform context
   std::shared_ptr<RNSkPlatformContext> _platformContext;
 };
