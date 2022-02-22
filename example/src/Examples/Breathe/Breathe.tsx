@@ -13,6 +13,7 @@ import {
   mix,
 } from "@shopify/react-native-skia";
 import { useTiming } from "@shopify/react-native-skia/src/renderer/animations/useTiming";
+import { useLoop } from "@shopify/react-native-skia/src/renderer/animations/useLoop";
 
 const { width, height } = Dimensions.get("window");
 const c1 = "#61bea2";
@@ -44,7 +45,7 @@ const Ring = ({ index, progress }: RingProps) => {
 };
 
 const Rings = () => {
-  const progress = useTiming(5000);
+  const progress = useLoop(5000);
   return (
     <Group
       origin={center}

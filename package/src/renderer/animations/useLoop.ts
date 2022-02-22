@@ -1,27 +1,29 @@
 import { useEffect } from "react";
 
 import { useValue } from "./useValue";
+import { withTiming } from "./timing";
+import type { Animation } from "./AnimatedValue";
 
-export const useTiming = (duration: number) => {
+export const withRepeat = (
+  animation: Animation<number>
+): Animation<number> => ({
+  onStart: (timestamp) => animation.onStart(timestamp),
+  onFrame: (timestamp, currentState) => {
+    let state = animation.onFrame(timestamp, currentState);
+    if (state.finished) {
+      state = animation.onStart(timestamp);
+    }
+    return {
+      ...state,
+      finished: false,
+    };
+  },
+});
+
+export const useLoop = (duration: number) => {
   const progress = useValue(0);
   useEffect(() => {
-    progress.setAnimation({
-      onStart: (lastTimestamp) => ({
-        current: 0,
-        finished: false,
-        lastTimestamp,
-      }),
-      onFrame: (timestamp, state) => {
-        const progress = (timestamp - state.lastTimestamp) / duration;
-        console.log({ progress });
-
-        return {
-          current: progress,
-          finished: progress > 1,
-          lastTimestamp: state.lastTimestamp,
-        };
-      },
-    });
+    progress.setAnimation(withRepeat(withTiming(duration)));
   }, []);
   return progress;
 };
