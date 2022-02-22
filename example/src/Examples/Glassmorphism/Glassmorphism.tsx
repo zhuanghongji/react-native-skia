@@ -49,7 +49,6 @@ export const Glassmorphism = () => {
         </Paint>
         <Circle c={c} r={() => mix(progress.value, r, r / 2)} />
       </Group>
-      <BackdropBlur intensity={20} clip={rect} />
     </Canvas>
   );
 };
