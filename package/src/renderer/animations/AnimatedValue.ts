@@ -47,6 +47,7 @@ export class AnimatedValue<T> {
     if (animation) {
       this.animationState = animation.onStart(Date.now());
       this.ref.current?.setDrawMode("continuous");
+      console.log("continuous");
     } else {
       this.animationState = null;
       this.ref.current?.setDrawMode("default");

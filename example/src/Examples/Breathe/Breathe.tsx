@@ -12,6 +12,7 @@ import {
   Easing,
   mix,
 } from "@shopify/react-native-skia";
+import { useTiming } from "@shopify/react-native-skia/src/renderer/animations/useTiming";
 
 const { width, height } = Dimensions.get("window");
 const c1 = "#61bea2";
@@ -42,29 +43,28 @@ const Ring = ({ index, progress }: RingProps) => {
   );
 };
 
-export const Breathe = () => {
-  const progress = useLoop(
-    {
-      duration: 3000,
-      easing: Easing.inOut(Easing.ease),
-    },
-    { yoyo: true }
+const Rings = () => {
+  const progress = useTiming(5000);
+  return (
+    <Group
+      origin={center}
+      transform={() => [{ rotate: mix(progress.value, -Math.PI, 0) }]}
+    >
+      {new Array(6).fill(0).map((_, index) => {
+        return <Ring key={index} index={index} progress={progress} />;
+      })}
+    </Group>
   );
+};
 
+export const Breathe = () => {
   return (
     <Canvas style={styles.container} debug>
       <Paint blendMode="screen">
         <BlurMask style="solid" sigma={40} />
       </Paint>
       <Fill color="rgb(36,43,56)" />
-      <Group
-        origin={center}
-        transform={() => [{ rotate: mix(progress.value, -Math.PI, 0) }]}
-      >
-        {new Array(6).fill(0).map((_, index) => {
-          return <Ring key={index} index={index} progress={progress} />;
-        })}
-      </Group>
+      <Rings />
     </Canvas>
   );
 };

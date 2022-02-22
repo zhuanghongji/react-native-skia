@@ -30,9 +30,7 @@ import { vec } from "./processors";
 import { popDrawingContext, pushDrawingContext } from "./CanvasProvider";
 import type { DrawingContext } from "./DrawingContext";
 
-interface SkiaContext {
-  ref: RefObject<SkiaView>;
-}
+type SkiaContext = RefObject<SkiaView>;
 
 const SkiaContext = createContext<SkiaContext | null>(null);
 
