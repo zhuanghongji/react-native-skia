@@ -39,18 +39,15 @@ export class AnimatedValue<T> {
 
   set value(value: T) {
     this._value = value;
-    this.ref.current?.redraw();
+    this.ref.current?.redraw(); // <- inversion on control: the view knows about its values.
   }
 
   setAnimation(animation: Animation<T> | null) {
     this.animation = animation;
     if (animation) {
       this.animationState = animation.onStart(Date.now());
-      this.ref.current?.setDrawMode("continuous");
-      console.log("continuous");
     } else {
       this.animationState = null;
-      this.ref.current?.setDrawMode("default");
     }
   }
 }
