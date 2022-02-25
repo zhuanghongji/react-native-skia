@@ -2,6 +2,8 @@ import type { RefObject } from "react";
 
 import type { SkiaView } from "../../views/SkiaView";
 
+export type AnimationCallback = (v: number) => void;
+
 export type AnimationState<T> = {
   current: T;
   finished: boolean;

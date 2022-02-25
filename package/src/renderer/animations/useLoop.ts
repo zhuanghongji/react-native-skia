@@ -23,7 +23,7 @@ export const withRepeat =
 export const useLoop = (duration: number) => {
   const progress = useValue(0);
   useEffect(() => {
-    progress.setAnimation(withRepeat(withTiming(duration)));
+    progress.setAnimation(withRepeat(withTiming({ duration: 3000 })));
   }, [duration, progress]);
   return progress;
 };

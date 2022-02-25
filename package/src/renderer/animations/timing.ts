@@ -1,32 +1,66 @@
-import type { Animation, AnimationState } from "./Scheduler";
+import type { Animation, AnimationCallback, AnimationState } from "./Scheduler";
+
+type EasingFunction = (t: number) => number;
+
+interface TimingConfig {
+  from?: number;
+  to?: number;
+  duration?: number;
+  easing?: EasingFunction;
+}
 
 interface TimingState extends AnimationState<number> {
-  lastTimestamp: number;
+  startValue: number;
+  startTime: number;
+  progress: number;
 }
 
 export const timing = (
-  timestamp: number,
-  duration: number,
-  startTimestamp: number
+  now: number,
+  config: Required<TimingConfig>,
+  state: TimingState
 ) => {
-  const progress = (timestamp - startTimestamp) / duration;
-  return progress;
+  const { startTime, startValue } = state;
+  const runtime = now - startTime;
+
+  if (runtime >= config.duration) {
+    // reset startTime to avoid reusing finished animation config in `start` method
+    state.startTime = 0;
+    return config.to;
+  }
+  const progress = config.easing(runtime / config.duration);
+  return startValue + (config.to - startValue) * progress;
 };
 
 export const withTiming =
-  (duration: number): Animation<number, TimingState> =>
+  (
+    userConfig?: TimingConfig,
+    callback?: AnimationCallback
+  ): Animation<number, TimingState> =>
   (timestamp, state?) => {
+    const config = {
+      from: 0,
+      to: 1,
+      duration: 300,
+      easing: (t: number) => t,
+      ...userConfig,
+    };
     if (!state) {
       return {
         current: 0,
         finished: false,
-        lastTimestamp: timestamp,
+        startValue: 0,
+        startTime: timestamp,
       };
     }
-    const progress = timing(timestamp, duration, state.lastTimestamp);
+    const progress = timing(timestamp, config, state);
+    const finished = progress >= config.to;
+    if (finished && callback) {
+      callback(progress);
+    }
     return {
+      ...state,
       current: progress,
-      finished: progress > 1,
-      lastTimestamp: state.lastTimestamp,
+      finished,
     };
   };
