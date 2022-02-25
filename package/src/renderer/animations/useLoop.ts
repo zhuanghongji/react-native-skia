@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 
 import { useValue } from "./useValue";
@@ -6,7 +5,10 @@ import { withTiming } from "./timing";
 import type { Animation, AnimationState } from "./Scheduler";
 
 export const withRepeat =
-  (animation: Animation<any, any>): Animation<number, AnimationState<any>> =>
+  (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    animation: Animation<number, any>
+  ): Animation<number, AnimationState<number>> =>
   (timestamp, currentState) => {
     let state = animation(timestamp, currentState);
     if (state.finished) {
