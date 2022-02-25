@@ -21,6 +21,6 @@ export const useLoop = (duration: number) => {
   const progress = useValue(0);
   useEffect(() => {
     progress.animation = withRepeat(withTiming(duration));
-  }, []);
+  }, [duration, progress]);
   return progress;
 };

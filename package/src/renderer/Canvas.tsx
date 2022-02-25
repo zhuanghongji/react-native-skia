@@ -29,8 +29,12 @@ import { CanvasNode } from "./nodes/Canvas";
 import { vec } from "./processors";
 import { popDrawingContext, pushDrawingContext } from "./CanvasProvider";
 import type { DrawingContext } from "./DrawingContext";
+import { Scheduler } from "./animations/Scheduler";
 
-type SkiaContext = RefObject<SkiaView>;
+type SkiaContext = {
+  ref: RefObject<SkiaView>;
+  scheduler: Scheduler;
+};
 
 const SkiaContext = createContext<SkiaContext | null>(null);
 
@@ -92,7 +96,7 @@ export interface CanvasProps extends ComponentProps<typeof SkiaView> {
 export const Canvas = forwardRef<SkiaView, CanvasProps>(
   ({ children, style, debug, mode, onTouch, fontMgr }, forwardedRef) => {
     const defaultRef = useCanvasRef();
-    const ref = forwardedRef || defaultRef;
+    const ref = (forwardedRef || defaultRef) as RefObject<SkiaView>;
     const [tick, setTick] = useState(0);
     const redraw = useCallback(() => setTick((t) => t + 1), []);
     const tree = useMemo(() => CanvasNode(redraw), [redraw]);
@@ -100,18 +104,22 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
       () => skiaReconciler.createContainer(tree, 0, false, null),
       [tree]
     );
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const scheduler = useMemo(() => new Scheduler(ref), []);
+    useEffect(() => {
+      const h = setInterval(scheduler.run, 16);
+      return () => clearInterval(h);
+    }, [scheduler]);
     // Render effect
     useEffect(() => {
       render(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        <SkiaContext.Provider value={ref as any}>
+        <SkiaContext.Provider value={{ ref, scheduler }}>
           {children}
         </SkiaContext.Provider>,
         container,
         redraw
       );
-    }, [children, container, redraw, ref]);
+    }, [children, container, redraw, ref, scheduler]);
 
     // Draw callback
     const onDraw = useDrawCallback(

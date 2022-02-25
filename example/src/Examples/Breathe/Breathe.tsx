@@ -9,11 +9,10 @@ import {
   Group,
   Paint,
   polar2Canvas,
-  Easing,
   mix,
 } from "@shopify/react-native-skia";
-import { useTiming } from "@shopify/react-native-skia/src/renderer/animations/useTiming";
 import { useLoop } from "@shopify/react-native-skia/src/renderer/animations/useLoop";
+import type { Value } from "@shopify/react-native-skia/src/renderer/animations/Scheduler";
 
 const { width, height } = Dimensions.get("window");
 const c1 = "#61bea2";
@@ -23,7 +22,7 @@ const center = vec(width / 2, height / 2 - 64);
 
 interface RingProps {
   index: number;
-  progress: AnimatedValue<number>;
+  progress: Value<number>;
 }
 
 const Ring = ({ index, progress }: RingProps) => {

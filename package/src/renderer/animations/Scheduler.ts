@@ -14,11 +14,11 @@ export type Animation<T> = (
 
 export class Value<T> {
   value: T;
-  engine: AnimationEngine;
+  engine: Scheduler;
   private _animation: Animation<T> | null = null;
   state: AnimationState<T> | null = null;
 
-  constructor(engine: AnimationEngine, value: T) {
+  constructor(engine: Scheduler, value: T) {
     this.value = value;
     this.engine = engine;
   }
@@ -29,7 +29,8 @@ export class Value<T> {
 
   set animation(animation: Animation<T> | null) {
     if (animation === null) {
-      // remove animation
+      this._animation = null;
+      this.engine.removeAnimation(this as Value<unknown>);
     } else {
       this._animation = animation;
       this.engine.addAnimation(this as Value<unknown>);
@@ -37,18 +38,16 @@ export class Value<T> {
   }
 }
 
-export class AnimationEngine {
+export class Scheduler {
   private ref: RefObject<SkiaView>;
-  private values: Value<unknown>[] = [];
   private _animations: Value<unknown>[] = [];
 
   constructor(ref: RefObject<SkiaView>) {
     this.ref = ref;
   }
 
-  createValue(value: unknown) {
+  createValue<T>(value: T) {
     const val = new Value(this, value);
-    this.values.push(val);
     return val;
   }
 
@@ -56,12 +55,16 @@ export class AnimationEngine {
     this._animations.push(value);
   }
 
+  removeAnimation(value: Value<unknown>) {
+    this._animations.splice(this._animations.indexOf(value), 1);
+  }
+
   run() {
     let dirty = false;
     const timestamp = Date.now();
     this._animations.forEach((value, i) => {
       const { animation, state } = value;
-      const newState = animation(timestamp, state);
+      const newState = animation!(timestamp, state!);
       this._animations[i].state = newState;
       if (value.value !== newState.current) {
         dirty = true;
@@ -69,11 +72,10 @@ export class AnimationEngine {
       value.value = newState.current;
       value.state = newState;
       if (newState!.finished) {
-        this._animations.splice(i, 1);
+        this.removeAnimation(value);
       }
     });
     if (dirty) {
-      console.log("redraw");
       this.ref.current!.redraw();
     }
   }
