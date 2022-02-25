@@ -15,7 +15,7 @@ export type Animation<T> = (
 export class Value<T> {
   value: T;
   engine: AnimationEngine;
-  _animation: Animation<T> | null = null;
+  private _animation: Animation<T> | null = null;
   state: AnimationState<T> | null = null;
 
   constructor(engine: AnimationEngine, value: T) {
@@ -24,12 +24,16 @@ export class Value<T> {
   }
 
   get animation() {
-    return this.animation;
+    return this._animation;
   }
 
-  set animation(animation: Animation<T>) {
-    this._animation = animation;
-    this.engine.addAnimation(this as Value<unknown>);
+  set animation(animation: Animation<T> | null) {
+    if (animation === null) {
+      // remove animation
+    } else {
+      this._animation = animation;
+      this.engine.addAnimation(this as Value<unknown>);
+    }
   }
 }
 
@@ -57,17 +61,19 @@ export class AnimationEngine {
     const timestamp = Date.now();
     this._animations.forEach((value, i) => {
       const { animation, state } = value;
-      const newState = animation(timestamp, state!);
+      const newState = animation(timestamp, state);
       this._animations[i].state = newState;
-      value.value = newState.current;
       if (value.value !== newState.current) {
         dirty = true;
       }
-      if (state!.finished) {
+      value.value = newState.current;
+      value.state = newState;
+      if (newState!.finished) {
         this._animations.splice(i, 1);
       }
     });
     if (dirty) {
+      console.log("redraw");
       this.ref.current!.redraw();
     }
   }
