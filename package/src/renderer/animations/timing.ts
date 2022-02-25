@@ -1,4 +1,4 @@
-import type { Animation } from "./AnimatedValue";
+import type { Animation } from "./Scheduler";
 
 export const timing = (
   timestamp: number,
@@ -9,18 +9,20 @@ export const timing = (
   return progress;
 };
 
-export const withTiming = (duration: number): Animation<number> => ({
-  onStart: (lastTimestamp) => ({
-    current: 0,
-    finished: false,
-    lastTimestamp,
-  }),
-  onFrame: (timestamp, state) => {
+export const withTiming =
+  (duration: number): Animation<number> =>
+  (timestamp, state) => {
+    if (!state) {
+      return {
+        current: 0,
+        finished: false,
+        lastTimestamp: timestamp,
+      };
+    }
     const progress = timing(timestamp, duration, state.lastTimestamp);
     return {
       current: progress,
       finished: progress > 1,
       lastTimestamp: state.lastTimestamp,
     };
-  },
-});
+  };
