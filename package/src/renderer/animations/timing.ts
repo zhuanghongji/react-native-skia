@@ -1,4 +1,8 @@
-import type { Animation } from "./Scheduler";
+import type { Animation, AnimationState } from "./Scheduler";
+
+interface TimingState extends AnimationState<number> {
+  lastTimestamp: number;
+}
 
 export const timing = (
   timestamp: number,
@@ -10,8 +14,8 @@ export const timing = (
 };
 
 export const withTiming =
-  (duration: number): Animation<number> =>
-  (timestamp, state) => {
+  (duration: number): Animation<number, TimingState> =>
+  (timestamp, state?) => {
     if (!state) {
       return {
         current: 0,

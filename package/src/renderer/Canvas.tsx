@@ -107,7 +107,7 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const scheduler = useMemo(() => new Scheduler(ref), []);
     useEffect(() => {
-      const h = setInterval(scheduler.run, 16);
+      const h = setInterval(() => scheduler.run(), 16);
       return () => clearInterval(h);
     }, [scheduler]);
     // Render effect

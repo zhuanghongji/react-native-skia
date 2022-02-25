@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 
 import { useValue } from "./useValue";
 import { withTiming } from "./timing";
-import type { Animation } from "./Scheduler";
+import type { Animation, AnimationState } from "./Scheduler";
 
 export const withRepeat =
-  (animation: Animation<number>): Animation<number> =>
+  (animation: Animation<any, any>): Animation<number, AnimationState<any>> =>
   (timestamp, currentState) => {
     let state = animation(timestamp, currentState);
     if (state.finished) {
@@ -20,7 +21,7 @@ export const withRepeat =
 export const useLoop = (duration: number) => {
   const progress = useValue(0);
   useEffect(() => {
-    progress.animation = withRepeat(withTiming(duration));
+    progress.setAnimation(withRepeat(withTiming(duration)));
   }, [duration, progress]);
   return progress;
 };

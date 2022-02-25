@@ -7,6 +7,6 @@ export const useTiming = (duration: number) => {
   const progress = useValue(0);
   useEffect(() => {
     progress.setAnimation(withTiming(duration));
-  }, []);
+  }, [duration, progress]);
   return progress;
 };
