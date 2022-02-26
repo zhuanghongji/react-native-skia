@@ -4,21 +4,22 @@ import type { SkiaView } from "../../views/SkiaView";
 
 export type AnimationCallback = (v: number) => void;
 
-export type AnimationState<T> = {
-  current: T;
+export type AnimationState = {
+  startValue: number;
+  current: number;
   finished: boolean;
 };
 
-export type Animation<T, S extends AnimationState<T> = AnimationState<T>> = (
+export type Animation<S extends AnimationState = AnimationState> = (
   timestamp: number,
   state?: S
-) => AnimationState<T>;
+) => S;
 
 export class Value<T> {
   value: T;
   engine: Scheduler;
-  private _animation: Animation<T> | null = null;
-  state: AnimationState<T> | null = null;
+  private _animation: Animation | null = null;
+  state: AnimationState | null = null;
 
   constructor(engine: Scheduler, value: T) {
     this.value = value;
@@ -29,12 +30,12 @@ export class Value<T> {
     return this._animation;
   }
 
-  setAnimation<S extends AnimationState<T>>(animation: Animation<T, S> | null) {
+  setAnimation(animation: Animation | null) {
     if (animation === null) {
       this._animation = null;
       this.engine.removeAnimation(this as Value<unknown>);
     } else {
-      this._animation = animation as Animation<T>;
+      this._animation = animation as Animation;
       this.engine.addAnimation(this as Value<unknown>);
     }
   }

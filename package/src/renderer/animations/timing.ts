@@ -9,10 +9,8 @@ interface TimingConfig {
   easing?: EasingFunction;
 }
 
-interface TimingState extends AnimationState<number> {
-  startValue: number;
+interface TimingState extends AnimationState {
   startTime: number;
-  progress: number;
 }
 
 export const timing = (
@@ -25,7 +23,7 @@ export const timing = (
 
   if (runtime >= config.duration) {
     // reset startTime to avoid reusing finished animation config in `start` method
-    state.startTime = 0;
+    // state.startTime = 0;
     return config.to;
   }
   const progress = config.easing(runtime / config.duration);
@@ -33,10 +31,7 @@ export const timing = (
 };
 
 export const withTiming =
-  (
-    userConfig?: TimingConfig,
-    callback?: AnimationCallback
-  ): Animation<number, TimingState> =>
+  (userConfig?: TimingConfig, callback?: AnimationCallback): Animation =>
   (timestamp, state?) => {
     const config = {
       from: 0,
