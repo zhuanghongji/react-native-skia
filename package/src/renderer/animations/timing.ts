@@ -31,7 +31,10 @@ export const timing = (
 };
 
 export const withTiming =
-  (userConfig?: TimingConfig, callback?: AnimationCallback): Animation =>
+  (
+    userConfig?: TimingConfig,
+    callback?: AnimationCallback
+  ): Animation<TimingState> =>
   (timestamp, state?) => {
     const config = {
       from: 0,

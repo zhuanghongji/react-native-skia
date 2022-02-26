@@ -34,6 +34,7 @@ import { Scheduler } from "./animations/Scheduler";
 type SkiaContext = {
   ref: RefObject<SkiaView>;
   scheduler: Scheduler;
+  onTouch?: TouchHandler;
 };
 
 const SkiaContext = createContext<SkiaContext | null>(null);
@@ -94,7 +95,7 @@ export interface CanvasProps extends ComponentProps<typeof SkiaView> {
 }
 
 export const Canvas = forwardRef<SkiaView, CanvasProps>(
-  ({ children, style, debug, mode, onTouch, fontMgr }, forwardedRef) => {
+  ({ children, style, debug, mode, fontMgr }, forwardedRef) => {
     const defaultRef = useCanvasRef();
     const ref = (forwardedRef || defaultRef) as RefObject<SkiaView>;
     const [tick, setTick] = useState(0);
@@ -106,6 +107,10 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const scheduler = useMemo(() => new Scheduler(ref), []);
+    const skiaCtx = useMemo(
+      () => ({ ref, scheduler, onTouch: undefined } as SkiaContext),
+      [ref, scheduler]
+    );
     useEffect(() => {
       const h = setInterval(() => scheduler.run(), 16);
       return () => clearInterval(h);
@@ -113,13 +118,11 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
     // Render effect
     useEffect(() => {
       render(
-        <SkiaContext.Provider value={{ ref, scheduler }}>
-          {children}
-        </SkiaContext.Provider>,
+        <SkiaContext.Provider value={skiaCtx}>{children}</SkiaContext.Provider>,
         container,
         redraw
       );
-    }, [children, container, redraw, ref, scheduler]);
+    }, [children, container, redraw, ref, scheduler, skiaCtx]);
 
     // Draw callback
     const onDraw = useDrawCallback(
@@ -131,7 +134,8 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
         }
         // TODO: if tree is empty (count === 1) maybe we should not render?
         const { width, height, timestamp } = info;
-        onTouch && onTouch(info.touches);
+        //   onTouch && onTouch(info.touches);
+        skiaCtx.onTouch && skiaCtx.onTouch(info.touches);
         const paint = Skia.Paint();
         paint.setAntiAlias(true);
         const ctx: DrawingContext = {
@@ -150,7 +154,7 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
         tree.draw(ctx, tree.props, tree.children);
         popDrawingContext();
       },
-      [tick, onTouch]
+      [tick]
     );
     return (
       <SkiaView

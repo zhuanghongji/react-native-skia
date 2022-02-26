@@ -10,7 +10,8 @@ interface RepeatAnimationState extends AnimationState {
 
 export const withRepeat =
   (
-    animation: Animation,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    animation: Animation<any>,
     numberOfReps = -1,
     reverse = false,
     callback?: AnimationCallback

@@ -7,15 +7,15 @@ import {
   Paint,
   Skia,
   ShaderLib,
-  useValue,
   useTouchHandler,
   BlurMask,
   canvas2Polar,
   polar2Canvas,
+  Shader,
 } from "@shopify/react-native-skia";
 import { Dimensions } from "react-native";
-
-import { Shader } from "../../../../package/src/renderer/components/shaders/Shader";
+import { useValue } from "@shopify/react-native-skia/src/renderer/animations/useValue";
+import { TouchHandler } from "@shopify/react-native-skia/src/renderer/animations/TouchHandler";
 
 import { polar2Color } from "./Helpers";
 
@@ -39,7 +39,7 @@ half4 main(vec2 uv) {
   return hsv2rgb(vec3(theta/TAU, quadraticIn(mag/r), 1.0));
 }`)!;
 
-export const Hue = () => {
+const ColorSelection = () => {
   const r = (width - 32) / 2;
   const translateX = useValue(c.x);
   const translateY = useValue(c.y);
@@ -57,7 +57,7 @@ export const Hue = () => {
     },
   });
   return (
-    <Canvas style={{ flex: 1 }} onTouch={onTouch}>
+    <TouchHandler onTouch={onTouch}>
       <Fill color={() => color.value} />
       <Paint>
         <BlurMask sigma={40} style="solid" />
@@ -70,6 +70,14 @@ export const Hue = () => {
         cx={() => translateX.value}
         cy={() => translateY.value}
       />
+    </TouchHandler>
+  );
+};
+
+export const Hue = () => {
+  return (
+    <Canvas style={{ flex: 1 }}>
+      <ColorSelection />
     </Canvas>
   );
 };
