@@ -10,6 +10,7 @@ interface TimingConfig {
 }
 
 interface TimingState extends AnimationState {
+  startValue: number;
   startTime: number;
 }
 

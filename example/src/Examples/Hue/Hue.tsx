@@ -16,6 +16,7 @@ import {
 import { Dimensions } from "react-native";
 import { useValue } from "@shopify/react-native-skia/src/renderer/animations/useValue";
 import { TouchHandler } from "@shopify/react-native-skia/src/renderer/animations/TouchHandler";
+import { withDecay } from "@shopify/react-native-skia/src/renderer/animations/decay";
 
 import { polar2Color } from "./Helpers";
 
@@ -45,6 +46,10 @@ const ColorSelection = () => {
   const translateY = useValue(c.y);
   const color = useValue(0xffffffff);
   const onTouch = useTouchHandler({
+    onStart: () => {
+      translateX.cancelAnimation();
+      translateY.cancelAnimation();
+    },
     onActive: (pt) => {
       const { theta, radius } = canvas2Polar(pt, center);
       const { x, y } = polar2Canvas(
@@ -54,6 +59,15 @@ const ColorSelection = () => {
       translateX.value = x;
       translateY.value = y;
       color.value = polar2Color(theta, Math.min(radius, r), r);
+    },
+    onEnd: ({ velocityX, velocityY }) => {
+      //console.log("GO!");
+      translateX.setAnimation(
+        withDecay({ from: translateX.value, velocity: -velocityX })
+      );
+      translateY.setAnimation(
+        withDecay({ from: translateY.value, velocity: -velocityY })
+      );
     },
   });
   return (

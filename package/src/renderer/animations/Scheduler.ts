@@ -5,7 +5,6 @@ import type { SkiaView } from "../../views/SkiaView";
 export type AnimationCallback = (v: number) => void;
 
 export type AnimationState = {
-  startValue: number;
   current: number;
   finished: boolean;
 };
@@ -17,9 +16,9 @@ export type Animation<S extends AnimationState = AnimationState> = (
 
 export class Value<T> {
   value: T;
-  engine: Scheduler;
+  private engine: Scheduler;
   private _animation: Animation | null = null;
-  state: AnimationState | null = null;
+  private state: AnimationState | null = null;
 
   constructor(engine: Scheduler, value: T) {
     this.value = value;
@@ -33,11 +32,16 @@ export class Value<T> {
   setAnimation(animation: Animation | null) {
     if (animation === null) {
       this._animation = null;
+      this.state = null;
       this.engine.removeAnimation(this as Value<unknown>);
     } else {
       this._animation = animation as Animation;
       this.engine.addAnimation(this as Value<unknown>);
     }
+  }
+
+  cancelAnimation() {
+    this.setAnimation(null);
   }
 }
 
