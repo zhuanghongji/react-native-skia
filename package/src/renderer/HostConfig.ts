@@ -5,6 +5,7 @@ import { DeclarationNode, DrawingNode } from "./nodes";
 import type { Container, SkNode } from "./Host";
 import { NodeType } from "./Host";
 import { exhaustiveCheck, mapKeys } from "./typeddash";
+import { SkiaNode } from "./nodes/SkiaNode";
 
 const DEBUG = false;
 export const debug = (...args: Parameters<typeof console.log>) => {
@@ -132,6 +133,9 @@ const createNode = (type: NodeType, props: Props) => {
     case NodeType.Declaration:
       const { onDeclare, ...p2 } = props;
       return new DeclarationNode(onDeclare, p2);
+    case NodeType.SkiaNode:
+      const { renderer, ...p3 } = props;
+      return new SkiaNode(p3, renderer);
     default:
       // TODO: here we need to throw a nice error message
       // This is the error that will show up when the user uses nodes not supported by Skia (View, Audio, etc)

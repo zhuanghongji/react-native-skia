@@ -4,10 +4,12 @@ import type { DrawingContext } from "./DrawingContext";
 import type { DeclarationResult, DeclarationProps } from "./nodes/Declaration";
 import type { DrawingProps } from "./nodes";
 import type { AnimatedProps } from "./processors/Animations/Animations";
+import type { SkiaNodeProps } from "./nodes/SkiaNode";
 
 export enum NodeType {
   Declaration = "skDeclaration",
   Drawing = "skDrawing",
+  SkiaNode = "skiaNode",
 }
 
 export abstract class SkNode<P> {
@@ -35,7 +37,9 @@ export abstract class SkNode<P> {
     const returnedValues: Exclude<DeclarationResult, null>[] = [];
     let currentCtx = ctx;
     this.children.forEach((child) => {
-      if (!child.memoized) {
+      if (child.renderer) {
+        child.visit(ctx);
+      } else if (!child.memoized) {
         const ret = child.draw(currentCtx);
         if (ret) {
           if (isPaint(ret)) {
@@ -73,6 +77,8 @@ declare global {
       skDeclaration: DeclarationProps<any>;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       skDrawing: DrawingProps<any>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      skiaNode: SkiaNodeProps<any, any>;
     }
   }
 }
