@@ -15,7 +15,7 @@ import type {
   AnimatedProps,
   ClipDef,
 } from "../processors";
-import { createDrawing } from "../nodes/Drawing";
+import type { SkiaNodeRenderer } from "../nodes/SkiaNode";
 
 export interface GroupProps extends CustomPaintProps, TransformProps {
   clip?: ClipDef;
@@ -23,8 +23,8 @@ export interface GroupProps extends CustomPaintProps, TransformProps {
   rasterize?: RefObject<SkPaint>;
 }
 
-const onDraw = createDrawing<GroupProps>(
-  (ctx, { rasterize, clip, invertClip, ...groupProps }, node) => {
+const renderer: SkiaNodeRenderer<GroupProps, null> = {
+  draw: (ctx, { rasterize, clip, invertClip, ...groupProps }, node) => {
     const { canvas, opacity } = ctx;
     const paint = selectPaint(ctx.paint, groupProps);
     processPaint(paint, opacity, groupProps);
@@ -44,9 +44,9 @@ const onDraw = createDrawing<GroupProps>(
       opacity: groupProps.opacity ? groupProps.opacity * opacity : opacity,
     });
     canvas.restore();
-  }
-);
+  },
+};
 
 export const Group = (props: AnimatedProps<GroupProps>) => {
-  return <skDrawing onDraw={onDraw} {...props} skipProcessing />;
+  return <skiaNode renderer={renderer} {...props} />;
 };

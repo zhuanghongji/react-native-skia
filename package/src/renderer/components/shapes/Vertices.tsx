@@ -27,7 +27,7 @@ const renderer: SkiaNodeRenderer<VerticesProps, SkVertices> = {
       indices
     );
   },
-  draw: ({ canvas, paint }, { colors, blendMode }, vertices) => {
+  draw: ({ canvas, paint }, { colors, blendMode }, _, vertices) => {
     // If the colors are provided, the default blendMode is set to dstOver, if not, the default is set to srcOver
     const defaultBlendMode = colors ? BlendMode.DstOver : BlendMode.SrcOver;
     const blend = blendMode ? BlendMode[enumKey(blendMode)] : defaultBlendMode;

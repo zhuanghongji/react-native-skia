@@ -18,6 +18,9 @@ import {
   Vertices,
   RoundedRect,
   Patch,
+  useLoop,
+  mix,
+  useDerivedValue,
 } from "@shopify/react-native-skia";
 
 import { Title } from "./components/Title";
@@ -66,6 +69,12 @@ const bottomRight = { pos: vec(100, 100), c1: vec(100, 85), c2: vec(85, 100) };
 const bottomLeft = { pos: vec(16, 100), c1: vec(0, 85), c2: vec(15, 100) };
 
 export const Shapes = () => {
+  const progress = useLoop({ duration: 1500 });
+  const transform = useDerivedValue(
+    (p) => [{ translateX: mix(p, 0, 100) }],
+    [progress]
+  );
+
   return (
     <ScrollView>
       <Title>Rectangles</Title>
@@ -117,16 +126,18 @@ export const Shapes = () => {
       </Canvas>
       <Title>Vertices</Title>
       <Canvas style={styles.container}>
-        <Vertices
-          mode="triangleFan"
-          vertices={[
-            vec(16, 0),
-            vec(250, 0),
-            vec(100, SIZE / 2),
-            vec(16, SIZE + 32),
-          ]}
-          colors={["#61DAFB", "#fb61da", "#61fbcf", "#dafb61"]}
-        />
+        <Group transform={transform}>
+          <Vertices
+            mode="triangleFan"
+            vertices={[
+              vec(16, 0),
+              vec(250, 0),
+              vec(100, SIZE / 2),
+              vec(16, SIZE + 32),
+            ]}
+            colors={["#61DAFB", "#fb61da", "#61fbcf", "#dafb61"]}
+          />
+        </Group>
       </Canvas>
     </ScrollView>
   );

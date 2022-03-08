@@ -14,8 +14,8 @@ type Declare<P, D extends DeclarationResult> = (
 type Draw<P, D extends DeclarationResult> = (
   ctx: DrawingContext,
   props: P,
-  decl: D,
-  node: SkiaNode<P, D>
+  node: SkiaNode<P, D>,
+  decl: D
 ) => void;
 
 export type SkiaNodeRenderer<P, D extends DeclarationResult> = {
@@ -48,6 +48,7 @@ export class SkiaNode<P, D extends DeclarationResult = null> extends SkNode<P> {
 
   declare(ctx: DrawingContext) {
     if (this.renderer.declare) {
+      console.log("Declare Vertices");
       this.declaration = this.renderer.declare(
         ctx,
         materialize(this.props),
@@ -58,17 +59,12 @@ export class SkiaNode<P, D extends DeclarationResult = null> extends SkNode<P> {
   }
 
   draw(ctx: DrawingContext) {
-    if (this.renderer.draw) {
-      this.renderer.draw(ctx, materialize(this.props), this.declaration!, this);
-    }
-  }
-
-  visit(ctx: DrawingContext) {
     const currentCtx = ctx;
     if (this.declaration === undefined) {
       this.declare(currentCtx);
     }
-    this.draw(currentCtx);
-    return [];
+    if (this.renderer.draw) {
+      this.renderer.draw(ctx, materialize(this.props), this, this.declaration!);
+    }
   }
 }
