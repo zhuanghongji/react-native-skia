@@ -37,7 +37,8 @@ export abstract class SkNode<P> {
     const returnedValues: Exclude<DeclarationResult, null>[] = [];
     let currentCtx = ctx;
     this.children.forEach((child) => {
-      if (child.renderer) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((child as any).renderer) {
         child.visit(ctx);
       } else if (!child.memoized) {
         const ret = child.draw(currentCtx);

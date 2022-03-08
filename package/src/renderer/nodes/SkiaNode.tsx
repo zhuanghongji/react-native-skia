@@ -1,4 +1,3 @@
-import { isPaint } from "../../skia";
 import type { DrawingContext } from "../DrawingContext";
 import type { AnimatedProps } from "../processors";
 import { materialize } from "../processors";
@@ -38,6 +37,15 @@ export class SkiaNode<P, D extends DeclarationResult = null> extends SkNode<P> {
     this.renderer = renderer;
   }
 
+  set props(props: AnimatedProps<P>) {
+    this.declaration = undefined;
+    this._props = props;
+  }
+
+  get props() {
+    return this._props;
+  }
+
   declare(ctx: DrawingContext) {
     if (this.renderer.declare) {
       this.declaration = this.renderer.declare(
@@ -56,11 +64,9 @@ export class SkiaNode<P, D extends DeclarationResult = null> extends SkNode<P> {
   }
 
   visit(ctx: DrawingContext) {
-    let currentCtx = ctx;
-    const ret = this.declare(currentCtx);
-    console.log({ ret });
-    if (ret && isPaint(ret)) {
-      currentCtx = { ...currentCtx, paint: ret };
+    const currentCtx = ctx;
+    if (this.declaration === undefined) {
+      this.declare(currentCtx);
     }
     this.draw(currentCtx);
     return [];

@@ -15,6 +15,7 @@ export interface VerticesProps extends CustomPaintProps {
   blendMode?: SkEnum<typeof BlendMode>;
   indices?: number[];
 }
+
 const renderer: SkiaNodeRenderer<VerticesProps, SkVertices> = {
   declare: ({ opacity }, { colors, vertices, textures, mode, indices }) => {
     const vertexMode = mode ? VertexMode[enumKey(mode)] : VertexMode.Triangles;
