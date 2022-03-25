@@ -12,9 +12,13 @@ namespace RNSkia {
     class JsiSkTypefaceFactory : public JsiSkHostObject {
     public:
         JSI_HOST_FUNCTION(MakeFreeTypeFaceFromData) {
-            auto data = JsiSkData::fromValue(runtime, arguments[0]);
-            return jsi::Object::createFromHostObject(
-                runtime, std::make_shared<JsiSkTypeface>(getContext(), SkFontMgr::RefDefault()->makeFromData(data)));
+          auto data = JsiSkData::fromValue(runtime, arguments[0]);
+          auto typeface = SkFontMgr::RefDefault()->makeFromData(data);
+          if(typeface == nullptr) {
+            return jsi::Value::undefined();
+          }
+          return jsi::Object::createFromHostObject(
+              runtime, std::make_shared<JsiSkTypeface>(getContext(), typeface));
         }
 
         JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkTypefaceFactory, MakeFreeTypeFaceFromData))
