@@ -71,5 +71,14 @@
   },
   "dependencies": {
     "react-reconciler": "^0.26.2"
+  },
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "rnskia",
+        "type": "components",
+        "jsSrcsDir": "./src/fabric"
+      }
+    ]
   }
 }
