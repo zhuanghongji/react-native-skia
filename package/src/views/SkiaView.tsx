@@ -1,14 +1,40 @@
-/* global SkiaViewApi:false */
-
 import React from "react";
+import { requireNativeComponent } from "react-native";
 
-import type { SkRect } from "../skia";
+import type { SkImage, SkRect } from "../skia";
 import type { SkiaReadonlyValue } from "../values";
 
-import { NativeSkiaView } from "./types";
-import type { DrawMode, RNSkiaDrawCallback, RNSkiaViewProps } from "./types";
+import type {
+  DrawMode,
+  NativeSkiaViewProps,
+  RNSkiaDrawCallback,
+  RNSkiaViewProps,
+} from "./types";
 
 let SkiaViewNativeId = 1000;
+
+const NativeSkiaView = requireNativeComponent<NativeSkiaViewProps>(
+  "ReactNativeSkiaView"
+);
+
+declare global {
+  var SkiaViewApi: {
+    invalidateSkiaView: (nativeId: number) => void;
+    makeImageSnapshot: (nativeId: number, rect?: SkRect) => SkImage;
+    setDescriptor: (nativeId: number, descriptor: unknown) => void;
+    setDrawCallback: (
+      nativeId: number,
+      callback: RNSkiaDrawCallback | undefined
+    ) => void;
+    setDrawMode: (nativeId: number, mode: DrawMode) => void;
+    registerValuesInView: (
+      nativeId: number,
+      values: SkiaReadonlyValue<unknown>[]
+    ) => () => void;
+  };
+}
+
+const { SkiaViewApi } = global;
 
 export class SkiaView extends React.Component<RNSkiaViewProps> {
   constructor(props: RNSkiaViewProps) {
@@ -17,7 +43,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
     const { onDraw } = props;
     if (onDraw) {
       assertDrawCallbacksEnabled();
-      setDrawCallback(this._nativeId, onDraw);
+      SkiaViewApi.setDrawCallback(this._nativeId, onDraw);
     }
   }
 
@@ -32,7 +58,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
     const { onDraw } = this.props;
     if (onDraw !== prevProps.onDraw) {
       assertDrawCallbacksEnabled();
-      setDrawCallback(this._nativeId, onDraw);
+      SkiaViewApi.setDrawCallback(this._nativeId, onDraw);
     }
   }
 
@@ -43,7 +69,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public makeImageSnapshot(rect?: SkRect) {
     assertDrawCallbacksEnabled();
-    return makeImageSnapshot(this._nativeId, rect);
+    return SkiaViewApi.makeImageSnapshot(this._nativeId, rect);
   }
 
   /**
@@ -51,7 +77,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public redraw() {
     assertDrawCallbacksEnabled();
-    invalidateSkiaView(this._nativeId);
+    SkiaViewApi.invalidateSkiaView(this._nativeId);
   }
 
   /**
@@ -65,7 +91,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public setDrawMode(mode: DrawMode) {
     assertDrawCallbacksEnabled();
-    setDrawingModeForSkiaView(this._nativeId, mode);
+    SkiaViewApi.setDrawMode(this._nativeId, mode);
   }
 
   public setDescriptor(descriptor: Record<string, unknown> | undefined) {
@@ -80,7 +106,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public registerValues(values: SkiaReadonlyValue<unknown>[]) {
     assertDrawCallbacksEnabled();
-    return registerValuesInSkiaView(this._nativeId, values);
+    return SkiaViewApi.registerValuesInView(this._nativeId, values);
   }
 
   /**
@@ -129,39 +155,6 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
     );
   }
 }
-
-const setDrawCallback = (
-  nativeId: number,
-  drawCallback: RNSkiaDrawCallback | undefined
-) => {
-  return SkiaViewApi.setDrawCallback(nativeId, drawCallback);
-};
-
-export const invalidateSkiaView = (nativeId: number) => {
-  SkiaViewApi.invalidateSkiaView(nativeId);
-};
-
-export const setDescriptorForSkiaView = (
-  nativeId: number,
-  descriptor: Record<string, unknown> | undefined
-) => {
-  SkiaViewApi.setDescriptor(nativeId, descriptor);
-};
-
-export const makeImageSnapshot = (nativeId: number, rect?: SkRect) => {
-  return SkiaViewApi.makeImageSnapshot(nativeId, rect);
-};
-
-const setDrawingModeForSkiaView = (nativeId: number, mode: DrawMode) => {
-  SkiaViewApi.setDrawMode(nativeId, mode);
-};
-
-const registerValuesInSkiaView = (
-  nativeId: number,
-  values: SkiaReadonlyValue<unknown>[]
-) => {
-  return SkiaViewApi.registerValuesInView(nativeId, values);
-};
 
 const assertDrawCallbacksEnabled = () => {
   if (
