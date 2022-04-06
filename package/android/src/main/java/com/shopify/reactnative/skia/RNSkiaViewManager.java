@@ -38,7 +38,7 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
     @ReactProp(name = "skiaId")
     public void setSkiaId(SkiaDrawView view, Integer skiaId) {
         RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
-        skiaModule.getSkiaManager().register(nativeIdResolved, view);
+        skiaModule.getSkiaManager().register(skiaId, view);
         mViewMapping.put(view, skiaId);
     }
 
@@ -57,7 +57,7 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
         super.onDropViewInstance(view);
         RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
         Integer nativeId = mViewMapping.get(view);
-        skiaModule.getSkiaManager().unregister(na tiveId);
+        skiaModule.getSkiaManager().unregister(nativeId);
         mViewMapping.remove(view);
         view.onRemoved();
     }
