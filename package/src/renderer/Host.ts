@@ -28,6 +28,15 @@ export abstract class Node<P = unknown> {
 
   abstract draw(ctx: DrawingContext): void | DeclarationResult;
 
+  abstract descriptor(): Record<string, unknown>;
+
+  createDescriptor(): Record<string, unknown> {
+    return {
+      ...this.descriptor(),
+      children: this.children.map((child) => child.createDescriptor()),
+    };
+  }
+
   set props(props: AnimatedProps<P>) {
     this.depMgr.unSubscribeNode(this);
     this.depMgr.subscribeNode(this, props);
@@ -69,6 +78,10 @@ export class Container extends Node {
 
   draw(ctx: DrawingContext) {
     this.visit(ctx);
+  }
+
+  descriptor(): Record<string, unknown> {
+    return { root: true };
   }
 }
 

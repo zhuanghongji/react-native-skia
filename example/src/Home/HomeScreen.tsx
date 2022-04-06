@@ -6,6 +6,11 @@ import { HomeScreenButton } from "./HomeScreenButton";
 export const HomeScreen = () => {
   return (
     <ScrollView>
+      <HomeScreenButton
+        title="🧘 Native Drawing"
+        description="Drawing everything natively"
+        route="Native"
+      />
       <HomeScreenButton title="API" description="API examples" route="API" />
       <HomeScreenButton
         title="🧘 Breathe"
@@ -26,6 +31,11 @@ export const HomeScreen = () => {
         title="💡 Hue"
         description="Hue Color Selection"
         route="Hue"
+      />
+      <HomeScreenButton
+        title="📋 List"
+        description="Lists in Skia"
+        route="List"
       />
       <HomeScreenButton
         title="🌧 Digital Rain"

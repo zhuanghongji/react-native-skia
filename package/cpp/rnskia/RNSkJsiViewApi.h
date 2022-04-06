@@ -121,6 +121,29 @@ public:
     return jsi::Value::undefined();
   }
   
+  JSI_HOST_FUNCTION(setDescriptor) {
+    if (count != 2) {
+      _platformContext->raiseError(
+          std::string("setDescriptor: Expected 2 arguments, got " +
+                      std::to_string(count) + "."));
+      return jsi::Value::undefined();
+    }
+
+    if (!arguments[0].isNumber()) {
+      _platformContext->raiseError(
+          "setDescriptor: First argument must be a number");
+      return jsi::Value::undefined();
+    }
+
+    // find skia draw view
+    int nativeId = arguments[0].asNumber();
+    auto info = getEnsuredCallbackInfo(nativeId);
+    if (info->view != nullptr) {      
+      info->view->setDescriptor(arguments[1]);
+    }
+    return jsi::Value::undefined();
+  }
+  
   JSI_HOST_FUNCTION(setDrawMode) {
     if (count != 2) {
       _platformContext->raiseError(
@@ -190,6 +213,7 @@ public:
   }
   
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawCallback),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, setDescriptor),
                        JSI_EXPORT_FUNC(RNSkJsiViewApi, invalidateSkiaView),
                        JSI_EXPORT_FUNC(RNSkJsiViewApi, makeImageSnapshot),
                        JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawMode),

@@ -17,8 +17,10 @@ import {
   Glassmorphism,
   Neumorphism,
   PerformanceDrawingTest,
+  NativeDrawingExample,
 } from "./Examples";
 import { HomeScreen } from "./Home";
+import { ListExample } from "./Examples/List";
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -34,7 +36,7 @@ const App = () => {
               title: "🎨 Skia",
             }}
           />
-
+          <Stack.Screen name="Native" component={NativeDrawingExample} />
           <Stack.Screen name="API" component={API} />
           <Stack.Screen name="Breathe" component={Breathe} />
           <Stack.Screen name="Filters" component={Filters} />
@@ -61,6 +63,7 @@ const App = () => {
               header: () => null,
             }}
           />
+          <Stack.Screen name="List" component={ListExample} />
           <Stack.Screen name="Neumorphism" component={Neumorphism} />
           <Stack.Screen name="Drawing" component={DrawingExample} />
           <Stack.Screen name="Graphs" component={GraphsScreen} />

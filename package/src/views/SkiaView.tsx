@@ -68,6 +68,11 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
     setDrawingModeForSkiaView(this._nativeId, mode);
   }
 
+  public setDescriptor(descriptor: Record<string, unknown> | undefined) {
+    assertDrawCallbacksEnabled();
+    setDescriptorForSkiaView(this._nativeId, descriptor);
+  }
+
   /**
    * Registers one or move values as a dependant value of the Skia View. The view will
    * The view will redraw itself when any of the values change.
@@ -136,6 +141,13 @@ export const invalidateSkiaView = (nativeId: number) => {
   SkiaViewApi.invalidateSkiaView(nativeId);
 };
 
+export const setDescriptorForSkiaView = (
+  nativeId: number,
+  descriptor: Record<string, unknown> | undefined
+) => {
+  SkiaViewApi.setDescriptor(nativeId, descriptor);
+};
+
 export const makeImageSnapshot = (nativeId: number, rect?: SkRect) => {
   return SkiaViewApi.makeImageSnapshot(nativeId, rect);
 };
@@ -155,7 +167,8 @@ const assertDrawCallbacksEnabled = () => {
   if (
     SkiaViewApi === null ||
     SkiaViewApi.setDrawCallback == null ||
-    SkiaViewApi.invalidateSkiaView == null
+    SkiaViewApi.invalidateSkiaView == null ||
+    SkiaViewApi.setDescriptor == null
   ) {
     throw Error("Skia Api is not enabled.");
   }

@@ -44,7 +44,12 @@ export const processPaint = (
   }: CustomPaintProps
 ) => {
   if (color !== undefined) {
-    const c = processColor(color, currentOpacity);
+    let c: number;
+    if (typeof color === "number") {
+      c = color;
+    } else {
+      c = processColor(color, currentOpacity);
+    }
     paint.setShader(null);
     paint.setColor(c);
   } else {

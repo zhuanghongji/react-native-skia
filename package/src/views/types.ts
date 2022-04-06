@@ -8,6 +8,7 @@ import type { SkCanvas } from "../skia/Canvas";
 export interface ISkiaViewApi {
   invalidateSkiaView: (nativeId: number) => void;
   makeImageSnapshot: (nativeId: number, rect?: SkRect) => SkImage;
+  setDescriptor: (nativeId: number, descriptor: unknown) => void;
   setDrawCallback: (
     nativeId: number,
     callback: RNSkiaDrawCallback | undefined
@@ -83,6 +84,7 @@ export type RNSkiaViewProps = ViewProps & {
    * average time it takes to render.
    */
   debug?: boolean;
+  experimental?: boolean;
   /**
    * Draw callback. Will be called whenever the view is invalidated and
    * needs to redraw. This is either caused by a change in a react

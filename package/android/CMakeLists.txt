@@ -64,6 +64,7 @@ target_include_directories(
         cpp/jni/include
         cpp/rnskia
         cpp/rnskia/values
+        cpp/rnskia/renderer
         cpp/utils  
 
         ${libfbjni_include_DIRS}

@@ -23,6 +23,7 @@ export const createDrawing = <P,>(cb: OnDrawCallback<P>): DrawingCallback<P> =>
 export type DrawingProps<T> = {
   onDraw: DrawingCallback<T>;
   skipProcessing?: boolean;
+  drawingType?: string;
   children?: ReactNode | ReactNode[];
 };
 
@@ -33,16 +34,26 @@ export const Drawing = <P,>(props: DrawingProps<P>) => {
 export class DrawingNode<P> extends Node<P> {
   onDraw: DrawingCallback<P>;
   skipProcessing: boolean;
+  drawingType: string | undefined;
 
   constructor(
     depMgr: DependencyManager,
     onDraw: DrawingCallback<P>,
     skipProcessing: boolean,
+    drawingType: string | undefined,
     props: AnimatedProps<P>
   ) {
     super(depMgr, props);
     this.onDraw = onDraw;
     this.skipProcessing = skipProcessing;
+    this.drawingType = drawingType;
+  }
+
+  descriptor() {
+    return {
+      drawingType: this.drawingType,
+      props: this.props,
+    };
   }
 
   draw(ctx: DrawingContext) {

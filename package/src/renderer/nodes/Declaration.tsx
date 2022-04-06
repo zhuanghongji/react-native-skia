@@ -19,18 +19,22 @@ export const createDeclaration = <T,>(
 
 export interface DeclarationProps<P> {
   onDeclare: DeclarationCallback<P>;
+  declarationType?: string;
 }
 
 export class DeclarationNode<P> extends Node<P> {
   private onDeclare: DeclarationCallback<P>;
+  private declarationType: string | undefined;
 
   constructor(
     depMgr: DependencyManager,
     onDeclare: DeclarationCallback<P>,
+    declarationType: string | undefined,
     props: AnimatedProps<P>
   ) {
     super(depMgr, props);
     this.onDeclare = onDeclare;
+    this.declarationType = declarationType;
   }
 
   set props(props: AnimatedProps<P>) {
@@ -40,6 +44,13 @@ export class DeclarationNode<P> extends Node<P> {
 
   get props() {
     return this._props;
+  }
+
+  descriptor() {
+    return {
+      declarationType: this.declarationType,
+      props: this.props,
+    };
   }
 
   draw(ctx: DrawingContext) {

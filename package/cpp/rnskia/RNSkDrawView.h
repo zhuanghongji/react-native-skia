@@ -12,6 +12,7 @@
 #include <RNSkPlatformContext.h>
 #include <RNSkTimingInfo.h>
 #include <RNSkLog.h>
+#include <RNSkReconciler.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -63,6 +64,11 @@ public:
    * Installs the draw callback for the view
    */
   void setDrawCallback(std::shared_ptr<jsi::Function> callback);
+  
+  /**
+   Sets the descriptor of the drawing tree for the object
+   */
+  void setDescriptor(const jsi::Value& val);
   
   /**
    Sets the native id of the view
@@ -235,8 +241,12 @@ private:
   /**
    Native draw handler
    */
-  std::function<void(const sk_sp<SkPicture>)> _nativeDrawFunc;  
+  std::function<void(const sk_sp<SkPicture>)> _nativeDrawFunc;
   
+  /**
+   Renderer
+   */
+  std::unique_ptr<RNSkReconciler> _renderer;
 };
 
 } // namespace RNSkia

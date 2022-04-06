@@ -128,11 +128,22 @@ const insertBefore = (parent: Node, child: Node, before: Node) => {
 const createNode = (container: Container, type: NodeType, props: Props) => {
   switch (type) {
     case NodeType.Drawing:
-      const { onDraw, skipProcessing, ...p1 } = props;
-      return new DrawingNode(container.depMgr, onDraw, skipProcessing, p1);
+      const { onDraw, skipProcessing, drawingType, ...p1 } = props;
+      return new DrawingNode(
+        container.depMgr,
+        onDraw,
+        skipProcessing,
+        drawingType,
+        p1
+      );
     case NodeType.Declaration:
-      const { onDeclare, ...p2 } = props;
-      return new DeclarationNode(container.depMgr, onDeclare, p2);
+      const { onDeclare, declarationType, ...p2 } = props;
+      return new DeclarationNode(
+        container.depMgr,
+        onDeclare,
+        declarationType,
+        p2
+      );
     default:
       // TODO: here we need to throw a nice error message
       // This is the error that will show up when the user uses nodes not supported by Skia (View, Audio, etc)

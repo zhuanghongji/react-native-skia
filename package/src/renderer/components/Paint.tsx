@@ -54,6 +54,8 @@ export const Paint = forwardRef<SkPaint, AnimatedProps<PaintProps>>(
         }),
       [paint]
     );
-    return <skDeclaration onDeclare={onDeclare} {...props} />;
+    return (
+      <skDeclaration onDeclare={onDeclare} {...props} declarationType="paint" />
+    );
   }
 );

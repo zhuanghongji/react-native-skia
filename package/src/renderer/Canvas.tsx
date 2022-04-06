@@ -72,11 +72,16 @@ skiaReconciler.injectIntoDevTools({
   rendererPackageName: "react-native-skia",
 });
 
-const render = (element: ReactNode, root: OpaqueRoot, container: Container) => {
+const render = (
+  element: ReactNode,
+  root: OpaqueRoot,
+  container: Container,
+  onUpdate: () => void
+) => {
   skiaReconciler.updateContainer(element, root, null, () => {
     hostDebug("updateContainer");
-
     container.depMgr.subscribe();
+    onUpdate();
   });
 };
 
@@ -92,7 +97,10 @@ export interface CanvasProps extends ComponentProps<typeof SkiaView> {
 const defaultFontMgr = Skia.FontMgr.RefDefault();
 
 export const Canvas = forwardRef<SkiaView, CanvasProps>(
-  ({ children, style, debug, mode, onTouch, fontMgr }, forwardedRef) => {
+  (
+    { children, style, debug, mode, onTouch, fontMgr, experimental },
+    forwardedRef
+  ) => {
     const innerRef = useCanvasRef();
     const ref = useCombinedRefs(forwardedRef, innerRef);
     const [tick, setTick] = useState(0);
@@ -108,6 +116,16 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
       () => skiaReconciler.createContainer(container, 0, false, null),
       [container]
     );
+    // Update descriptor
+    const updateDescriptor = useCallback(() => {
+      if (experimental) {
+        const descriptor = container.createDescriptor();
+        ref.current?.setDescriptor(descriptor);
+      } else {
+        ref.current?.setDescriptor(undefined);
+      }
+    }, [container, experimental, ref]);
+
     // Render effect
     useEffect(() => {
       render(
@@ -115,9 +133,10 @@ export const Canvas = forwardRef<SkiaView, CanvasProps>(
           {children}
         </CanvasContext.Provider>,
         root,
-        container
+        container,
+        updateDescriptor
       );
-    }, [children, root, redraw, container]);
+    }, [children, root, redraw, container, updateDescriptor]);
 
     // Draw callback
     const onDraw = useDrawCallback(
