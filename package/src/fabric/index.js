@@ -1,1 +1,1 @@
-export {ReactNativeSkiaViewNativeComponent} from './ReactNativeSkiaViewNativeComponent'
+export { ReactNativeSkiaViewNativeComponent } from "./ReactNativeSkiaViewNativeComponent";

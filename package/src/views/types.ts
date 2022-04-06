@@ -5,6 +5,7 @@ import type { SkCanvas } from "../skia/Canvas";
 export type DrawMode = "continuous" | "default";
 
 export type NativeSkiaViewProps = ViewProps & {
+  skiaId: number;
   mode?: DrawMode;
   debug?: boolean;
 };
