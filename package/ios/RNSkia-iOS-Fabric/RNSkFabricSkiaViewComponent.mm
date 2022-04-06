@@ -9,13 +9,19 @@
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
+#import <React/RCTBridge+Private.h>
+#import <RNSkiaModule.h>
+#import <SkiaDrawView.h>
+#import <RNSkManager.h>
+
 using namespace facebook::react;
 
 @interface RNSkFabricSkiaViewComponent () <RCTReactNativeSkiaViewViewProtocol>
 @end
 
 @implementation RNSkFabricSkiaViewComponent {
-  ReactNativeSkiaViewShadowNode::ConcreteState::Shared _state;  
+  ReactNativeSkiaViewShadowNode::ConcreteState::Shared _state;
+  SkiaDrawView* _drawView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -23,33 +29,17 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const ReactNativeSkiaViewProps>();
     _props = defaultProps;
+    
+    // Get the Skia module
+    auto skiaModule = (RNSkiaModule*)[RCTBridge.currentBridge moduleForName:@"RNSkia"];
+    if(skiaModule != NULL) {
+      _drawView = [[SkiaDrawView alloc] initWithManager:[skiaModule manager].skManager.get()];
+      _drawView.frame = self.bounds;
+      [self addSubview:_drawView];
+    }
   }
 
   return self;
-}
-
-- (void)didMoveToWindow
-{
-  [self updateStateIfNecessary];  
-}
-
-- (void)updateStateIfNecessary
-{
-  [self updateState];
-}
-
-- (void)updateState
-{
-  if (!_state) {
-    return;
-  }
-
-  _state->updateState(
-      [=](ReactNativeSkiaViewShadowNode::ConcreteState::Data const &oldData)
-          -> ReactNativeSkiaViewShadowNode::ConcreteState::SharedData {
-        auto newData = oldData;
-        return std::make_shared<ReactNativeSkiaViewShadowNode::ConcreteState::Data const>(newData);
-      });
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -64,18 +54,36 @@ using namespace facebook::react;
   _state = std::static_pointer_cast<ReactNativeSkiaViewShadowNode::ConcreteState const>(state);
 }
 
-- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
-{
-  [super finalizeUpdates:updateMask];
-  [self updateStateIfNecessary];
+- (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps {
+  [super updateProps:props oldProps:oldProps];
+  
+  const auto &newSkiaViewProps = *std::static_pointer_cast<const ReactNativeSkiaViewProps>(props);
+  
+  if(_drawView != NULL) {
+    [_drawView setNativeId:static_cast<size_t>(newSkiaViewProps.skiaId)];
+    if(newSkiaViewProps.mode == ReactNativeSkiaViewMode::Continuous) {
+      [_drawView setDrawingMode:"continuous"];
+    } else {
+      [_drawView setDrawingMode:"default"];
+    }
+    [_drawView setDebugMode:newSkiaViewProps.debug];
+  }
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-
-  [NSNotificationCenter.defaultCenter removeObserver:self];
+  if(_drawView != NULL) {
+    [_drawView removeFromSuperview];
+    _drawView = NULL;
+  }
   _state.reset();
+}
+
+- (void) layoutSubviews {
+  if(_drawView != NULL) {
+    _drawView.frame = self.bounds;
+  }
 }
 
 @end

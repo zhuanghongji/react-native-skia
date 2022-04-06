@@ -14,9 +14,9 @@
   return [skiaModule manager];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSNumber, SkiaDrawView) {
+RCT_CUSTOM_VIEW_PROPERTY(skiaId, NSNumber, SkiaDrawView) {
   // Get parameter
-  int nativeId = [[RCTConvert NSString:json] intValue];
+  int nativeId = [[RCTConvert NSNumber:json] intValue];
   [(SkiaDrawView*)view setNativeId:nativeId];            
 }
 

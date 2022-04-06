@@ -13,26 +13,25 @@ let SkiaViewNativeId = 1000;
 export class SkiaView extends React.Component<RNSkiaViewProps> {
   constructor(props: RNSkiaViewProps) {
     super(props);
-    this._nativeId = SkiaViewNativeId++;
+    this._skiaId = SkiaViewNativeId++;
     const { onDraw } = props;
     if (onDraw) {
       assertDrawCallbacksEnabled();
-      setDrawCallback(this._nativeId, onDraw);
+      setDrawCallback(this._skiaId, onDraw);
     }
   }
 
-  private _nativeId: number;
-  private _animatingValues: Array<unknown> = [];
+  private _skiaId: number;  
 
   public get nativeId() {
-    return this._nativeId;
+    return this._skiaId;
   }
 
   componentDidUpdate(prevProps: RNSkiaViewProps) {
     const { onDraw } = this.props;
     if (onDraw !== prevProps.onDraw) {
       assertDrawCallbacksEnabled();
-      setDrawCallback(this._nativeId, onDraw);
+      setDrawCallback(this._skiaId, onDraw);
     }
   }
 
@@ -43,7 +42,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public makeImageSnapshot(rect?: SkRect) {
     assertDrawCallbacksEnabled();
-    return makeImageSnapshot(this._nativeId, rect);
+    return makeImageSnapshot(this._skiaId, rect);
   }
 
   /**
@@ -51,7 +50,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public redraw() {
     assertDrawCallbacksEnabled();
-    invalidateSkiaView(this._nativeId);
+    invalidateSkiaView(this._skiaId);
   }
 
   /**
@@ -65,7 +64,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public setDrawMode(mode: DrawMode) {
     assertDrawCallbacksEnabled();
-    setDrawingModeForSkiaView(this._nativeId, mode);
+    setDrawingModeForSkiaView(this._skiaId, mode);
   }
 
   /**
@@ -75,40 +74,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
    */
   public registerValues(values: SkiaReadonlyValue<unknown>[]) {
     assertDrawCallbacksEnabled();
-    return registerValuesInSkiaView(this._nativeId, values);
-  }
-
-  /**
-   * Increases the number of animations active in the view.
-   */
-  public addAnimation(owner: unknown) {
-    if (this._animatingValues.findIndex((p) => p === owner) === -1) {
-      this._animatingValues.push(owner);
-    }
-
-    if (this._animatingValues.length === 1) {
-      if (this.props.mode === "default" || this.props.mode === undefined) {
-        //console.log("SkiaView addAnimation - mode changed to continuous");
-        this.setDrawMode("continuous");
-      }
-    }
-  }
-
-  /**
-   * Decreases the number of animations active in the view.
-   */
-  public removeAnimation(owner: unknown) {
-    const indexOfOwner = this._animatingValues.indexOf(owner);
-    if (indexOfOwner !== -1) {
-      // Remove
-      this._animatingValues = this._animatingValues.filter((p) => p !== owner);
-    }
-    if (this._animatingValues.length === 0) {
-      if (this.props.mode === "default" || this.props.mode === undefined) {
-        //console.log("SkiaView removeAnimation - mode changed to default");
-        this.setDrawMode("default");
-      }
-    }
+    return registerValuesInSkiaView(this._skiaId, values);
   }
 
   render() {
@@ -117,7 +83,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
       <NativeSkiaView
         style={style}
         collapsable={false}
-        nativeID={`${this._nativeId}`}
+        skiaId={this._skiaId}
         mode={mode}
         debug={debug}
       />

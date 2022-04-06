@@ -5,10 +5,6 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED']
-# folly_version must match the version used in React Native
-# See folly_version in react-native/React/FBReactNativeSpec/FBReactNativeSpec.podspec
-folly_version = '2021.06.28.00-v2'
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
   s.name         = "react-native-skia"
@@ -39,11 +35,6 @@ Pod::Spec.new do |s|
     'libs/ios/libskshaper.xcframework'
   ]
 
-  # All iOS cpp/h files
-  s.source_files = [
-    "ios/**/*.{h,c,cc,cpp,m,mm,swift}",  
-  ]
-
   s.subspec 'SkiaHeaders' do |ss|
     ss.header_mappings_dir = 'cpp/skia'
     ss.source_files = "cpp/skia/**/*.{h,cpp}"
@@ -70,6 +61,19 @@ Pod::Spec.new do |s|
   end
 
   if fabric_enabled
+
+    # folly_version must match the version used in React Native
+    # See folly_version in react-native/React/FBReactNativeSpec/FBReactNativeSpec.podspec
+    folly_version = '2021.06.28.00-v2'
+    folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+
+    # All common iOS cpp/h files
+    s.source_files = [
+      "ios/*.{h,c,cc,cpp,m,mm,swift}",
+      "ios/RNSkia-iOS/*.{h,c,cc,cpp,m,mm,swift}",
+      "ios/RNSkia-iOS-Fabric/*.{h,c,cc,cpp,m,mm,swift}",
+    ]
+
     s.dependency "React"
     s.dependency "React-RCTFabric"
     s.dependency "React-Codegen"
@@ -84,6 +88,12 @@ Pod::Spec.new do |s|
       "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     }
   else
+    # All common iOS cpp/h files
+    s.source_files = [
+      "ios/*.{h,c,cc,cpp,m,mm,swift}",
+      "ios/RNSkia-iOS/*.{h,c,cc,cpp,m,mm,swift}",
+    ]
+  
     s.dependency "React"
     s.dependency "React-callinvoker"
     s.dependency "React-Core"

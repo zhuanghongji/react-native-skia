@@ -35,13 +35,11 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
     public void updateExtraData(SkiaDrawView root, Object extraData) {
     }
 
-    @Override
-    public void setNativeId(@NonNull SkiaDrawView view, @Nullable String nativeId) {
-        super.setNativeId(view, nativeId);
-        int nativeIdResolved = Integer.parseInt(nativeId);
+    @ReactProp(name = "skiaId")
+    public void setSkiaId(SkiaDrawView view, Integer skiaId) {
         RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
         skiaModule.getSkiaManager().register(nativeIdResolved, view);
-        mViewMapping.put(view, nativeIdResolved);
+        mViewMapping.put(view, skiaId);
     }
 
     @ReactProp(name = "mode")
@@ -59,7 +57,7 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
         super.onDropViewInstance(view);
         RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
         Integer nativeId = mViewMapping.get(view);
-        skiaModule.getSkiaManager().unregister(nativeId);
+        skiaModule.getSkiaManager().unregister(na tiveId);
         mViewMapping.remove(view);
         view.onRemoved();
     }
