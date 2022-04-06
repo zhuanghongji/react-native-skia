@@ -77,7 +77,7 @@ public:
   
 protected:
   int convert(jsi::Runtime &runtime, const jsi::Value &value) override {
-    return static_cast<int>(value.asNumber());
+    return (int)std::lround(value.asNumber());
   }
 };
 

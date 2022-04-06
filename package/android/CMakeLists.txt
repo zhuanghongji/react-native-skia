@@ -64,7 +64,10 @@ target_include_directories(
         cpp/jni/include
         cpp/rnskia
         cpp/rnskia/values
-        cpp/rnskia/renderer
+        cpp/rnskia/reconciler
+        cpp/rnskia/reconciler/nodes
+        cpp/rnskia/reconciler/declarations
+        cpp/rnskia/reconciler/props
         cpp/utils  
 
         ${libfbjni_include_DIRS}

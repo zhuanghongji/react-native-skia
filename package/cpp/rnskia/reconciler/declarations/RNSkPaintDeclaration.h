@@ -25,11 +25,12 @@ public:
     }
   
   void update(jsi::Runtime &runtime) override {
-    if(color != nullptr)
+    if(color != nullptr) {
       getObject().setColor(color->getValue(runtime));
-    
-    if(strokeWidth != nullptr)
+    }
+    if(strokeWidth != nullptr) {
       getObject().setStrokeWidth(strokeWidth->getValue(runtime));
+    }
   }
 };
 }
