@@ -20,9 +20,10 @@ public:
 template <typename T>
 class RNSkBaseDeclarationHolder: public RNSkBaseDeclaration {
 public:
-  T& getObject() { return _value; };
+  RNSkBaseDeclarationHolder(std::shared_ptr<T> value): _value(value) {};
+  const std::shared_ptr<T> getObject() { return _value; };
   
 private:
-  T _value;
+  std::shared_ptr<T> _value;
 };
 }

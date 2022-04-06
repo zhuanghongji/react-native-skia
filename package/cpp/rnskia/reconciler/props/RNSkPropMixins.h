@@ -10,7 +10,7 @@ namespace RNSkia
 
 class RNSkPropsMixin {
 public:
-  jsi::Value getProperty(jsi::Runtime &runtime, const jsi::Value &value, const char* name) {
+  static jsi::Value getProperty(jsi::Runtime &runtime, const jsi::Value &value, const char* name) {
     if(value.isObject()) {
       auto props = value.asObject(runtime);
       auto prop = props.getProperty(runtime, name);
@@ -19,7 +19,7 @@ public:
     throw jsi::JSError(runtime, "Property descriptor is not an object.");
   }
   
-  bool hasProperty(jsi::Runtime &runtime, const jsi::Value &value, const char* name) {
+  static bool hasProperty(jsi::Runtime &runtime, const jsi::Value &value, const char* name) {
     auto prop = getProperty(runtime, value, name);
     return !prop.isUndefined() && !prop.isNull();
   }
@@ -65,6 +65,10 @@ public:
     if(hasProperty(runtime, props, "strokeWidth")) {
       strokeWidth = std::make_unique<RNSkFloatPropValue>(runtime, props, "strokeWidth");
     }
+  }
+  
+  static bool hasPaintProps(jsi::Runtime& runtime, const jsi::Value& props) {
+    return hasProperty(runtime, props, "color") || hasProperty(runtime, props, "strokeWidth");
   }
   
 protected:

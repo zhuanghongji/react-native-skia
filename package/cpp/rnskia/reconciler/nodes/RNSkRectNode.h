@@ -26,7 +26,7 @@ namespace RNSkia
         rect->setXYWH(x->getValue(runtime), y->getValue(runtime),
                       width->getValue(runtime), height->getValue(runtime));
       }
-      canvas->drawRect(*rect, paintDeclaration->getObject());
+      canvas->drawRect(*rect, *paintDeclaration->getObject());
     }
   };
 }

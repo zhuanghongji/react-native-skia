@@ -44,9 +44,9 @@ namespace RNSkia
         declaration->update(runtime);
       }
       // Render all drawing operations
-      for (auto &renderer : _nodes)
+      for (auto &node : _nodes)
       {
-        renderer->render(runtime, canvas, width, height);
+        node->render(runtime, canvas, width, height);
       }
     }
 
@@ -98,12 +98,24 @@ namespace RNSkia
         _declarations.emplace_back(paintDeclaration);
         _paintStack.emplace_back(paintDeclaration);
       }
+      
+      // Current paint
+      auto currentPaint = _paintStack.back();
+      
+      // Now let's check if the node has paint props
+      if(RNSkPaintProps::hasPaintProps(runtime, props)) {
+        // We need to create our own paint declaration used for rendering
+        // our node - and to make sure we keep the values in the current paint
+        // as well.
+        currentPaint = std::make_shared<RNSkPaintDeclaration>(runtime, props, currentPaint);
+        _declarations.emplace_back(currentPaint);
+      }
 
       // We have a drawing descriptor
       std::string drawingType = drawingTypeProp.asString(runtime).utf8(runtime);
       if (drawingType == "rect")
       {
-        _nodes.emplace_back(std::make_shared<RNSkRectNode>(runtime, props, _paintStack.back()));
+        _nodes.emplace_back(std::make_shared<RNSkRectNode>(runtime, props, currentPaint));
       }
       else
       {

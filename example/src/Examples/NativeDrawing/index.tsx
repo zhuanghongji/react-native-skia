@@ -8,12 +8,12 @@ import {
 } from "@shopify/react-native-skia";
 import { processColor, Text, useWindowDimensions, View } from "react-native";
 
-const NumberOfRects = 600;
-const Size = 5;
+const NumberOfRects = 1000;
+const Size = 10;
 
 export const NativeDrawingExample: React.FC = () => {
   const progress = useLoop();
-  const x = useDerivedValue(() => -50 + progress.current * 100, [progress]);
+  //const x = useDerivedValue(() => -50 + progress.current * 100, [progress]);
   const c = useDerivedValue(
     () =>
       processColor(
@@ -33,6 +33,11 @@ export const NativeDrawingExample: React.FC = () => {
         {new Array(NumberOfRects).fill(0).map((_, index) => (
           <Rect
             key={index}
+            color={
+              index % 2 === 0
+                ? (processColor("red") as unknown as number)
+                : undefined
+            }
             x={5 + ((index * Size) % width)}
             y={25 + Math.floor(index / (width / Size)) * Size}
             width={Size * 0.8}
