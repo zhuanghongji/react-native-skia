@@ -18,6 +18,7 @@ import {
   Neumorphism,
   PerformanceDrawingTest,
   NativeDrawingExample,
+  Vertices,
 } from "./Examples";
 import { HomeScreen } from "./Home";
 import { ListExample } from "./Examples/List";
@@ -37,6 +38,13 @@ const App = () => {
             }}
           />
           <Stack.Screen name="Native" component={NativeDrawingExample} />
+          <Stack.Screen
+            name="Vertices"
+            component={Vertices}
+            options={{
+              header: () => null,
+            }}
+          />
           <Stack.Screen name="API" component={API} />
           <Stack.Screen name="Breathe" component={Breathe} />
           <Stack.Screen name="Filters" component={Filters} />
