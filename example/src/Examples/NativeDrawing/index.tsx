@@ -3,10 +3,12 @@ import {
   Canvas,
   Paint,
   Rect,
+  runTiming,
   useDerivedValue,
-  useLoop,
+  useValue,
 } from "@shopify/react-native-skia";
 import {
+  Button,
   processColor,
   StyleSheet,
   Switch,
@@ -15,12 +17,11 @@ import {
   View,
 } from "react-native";
 
-const NumberOfRects = 1000;
-const Size = 10;
+const NumberOfRects = 250;
+const Size = 20;
 
 export const NativeDrawingExample: React.FC = () => {
-  const progress = useLoop();
-  //const x = useDerivedValue(() => -50 + progress.current * 100, [progress]);
+  const progress = useValue(0);
   const c = useDerivedValue(
     () =>
       processColor(
@@ -33,16 +34,28 @@ export const NativeDrawingExample: React.FC = () => {
   const { width } = useWindowDimensions();
 
   const [isExperimenal, setIsExperimental] = useState(false);
-
+  const [isDisabled, setIsDisabled] = useState(false);
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.panel}>
-        <Text>{`  💯 🍔 Rendering ${NumberOfRects} rects:`}</Text>
+        <Text>{`💯 🍔 Rendering ${NumberOfRects} rects`}</Text>
         <View style={styles.row}>
           <Text>Experimental&nbsp;</Text>
           <Switch
             value={isExperimenal}
+            disabled={isDisabled}
             onValueChange={() => setIsExperimental((p) => !p)}
+          />
+          <Button
+            title="Run"
+            disabled={isDisabled}
+            onPress={() => {
+              setIsDisabled(true);
+              progress.current = 0;
+              runTiming(progress, 1, { duration: 5000 }, () => {
+                setIsDisabled(false);
+              });
+            }}
           />
         </View>
       </View>
@@ -76,5 +89,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    padding: 10,
   },
 });

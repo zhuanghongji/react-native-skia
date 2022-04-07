@@ -35,7 +35,7 @@ namespace RNSkia
       // Decode the descriptor
       decode(runtime, descriptor);
     }
-
+    
     void render(jsi::Runtime &runtime, SkCanvas *canvas, const int width, const int height)
     {
       // Update all declarations
@@ -43,6 +43,7 @@ namespace RNSkia
       {
         declaration->update(runtime);
       }
+      
       // Render all drawing operations
       for (auto &node : _nodes)
       {

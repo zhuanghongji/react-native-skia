@@ -82,10 +82,10 @@ namespace RNSkia
   {
     if (val.isUndefined() || val.isNull())
     {
-      _renderer = nullptr;
+      _reconciler = nullptr;
       return;
     }
-    _renderer = std::make_unique<RNSkReconciler>(*getPlatformContext()->getJsRuntime(), val.asObject(*getPlatformContext()->getJsRuntime()));
+    _reconciler = std::make_unique<RNSkReconciler>(*getPlatformContext()->getJsRuntime(), val.asObject(*getPlatformContext()->getJsRuntime()));
 
     requestRedraw();
   }
@@ -151,10 +151,10 @@ namespace RNSkia
       skCanvas->scale(pd, pd);
 
       // Draw using the draw callback function
-      if (_renderer != nullptr)
+      if (_reconciler != nullptr)
       {
         // Render using the descriptor / render
-        _renderer->render(*getPlatformContext()->getJsRuntime(), skCanvas, width / pd, height / pd);
+        _reconciler->render(*getPlatformContext()->getJsRuntime(), skCanvas, width / pd, height / pd);
       }
       else if (_drawCallback != nullptr)
       {
@@ -241,7 +241,7 @@ namespace RNSkia
 
     // Start timing
     _jsTimingInfo.beginTiming();
-
+    
     // Record the drawing operations on the JS thread so that we can
     // move the actual drawing onto the render thread later
     SkPictureRecorder recorder;
@@ -249,12 +249,12 @@ namespace RNSkia
     SkCanvas *canvas = recorder.beginRecording(getWidth(), getHeight(), &factory);
     _jsiCanvas->setCanvas(canvas);
 
-    // Get current milliseconds
-    milliseconds ms = duration_cast<milliseconds>(
-        system_clock::now().time_since_epoch());
-
     try
     {
+      // Get current milliseconds
+      milliseconds ms = duration_cast<milliseconds>(
+          system_clock::now().time_since_epoch());
+      
       // Perform the javascript drawing
       drawInCanvas(_jsiCanvas, getWidth(), getHeight(), ms.count() / 1000.0);
     }
@@ -267,7 +267,7 @@ namespace RNSkia
 
     // Finish drawing operations
     auto p = recorder.finishRecordingAsPicture();
-
+    
     // Calculate duration
     _jsTimingInfo.stopTiming();
 
@@ -277,32 +277,34 @@ namespace RNSkia
       // Post drawing message to the render thread where the picture recorded
       // will be sent to the GPU/backend for rendering to screen.
       auto gpuLock = _gpuDrawingLock;
-      getPlatformContext()->runOnRenderThread([this, p = std::move(p), gpuLock]()
-                                              {
+      getPlatformContext()->runOnRenderThread([this, p = std::move(p), gpuLock]() {
       
-      if(isInvalidated()) {
+        if(isInvalidated()) {
+          gpuLock->unlock();
+          return;
+        }
+        
+        _gpuTimingInfo.beginTiming();
+
+        // Draw the picture recorded on the real GPU canvas
+        if(_nativeDrawFunc != nullptr) {
+  #if LOG_ALL_DRAWING
+            RNSkLogger::logToConsole("RNSkDrawView::drawFrame - %i", getNativeId());
+  #endif
+          _nativeDrawFunc([p = std::move(p)](SkCanvas* canvas) { canvas->drawPicture(p); });
+          
+        } else {
+  #if LOG_ALL_DRAWING
+            RNSkLogger::logToConsole("RNSkDrawView::drawFrame - %i SKIPPING, draw func is null", getNativeId());
+  #endif
+        }
+
+        _gpuTimingInfo.stopTiming();
+
+        // Unlock GPU drawing
         gpuLock->unlock();
-        return;
-      }
-      
-      _gpuTimingInfo.beginTiming();
-
-      // Draw the picture recorded on the real GPU canvas
-      if(_nativeDrawFunc != nullptr) {
-#if LOG_ALL_DRAWING
-          RNSkLogger::logToConsole("RNSkDrawView::drawFrame - %i", getNativeId());
-#endif
-        _nativeDrawFunc(p);
-      } else {
-#if LOG_ALL_DRAWING
-          RNSkLogger::logToConsole("RNSkDrawView::drawFrame - %i SKIPPING, draw func is null", getNativeId());
-#endif
-      }
-
-      _gpuTimingInfo.stopTiming();
-
-      // Unlock GPU drawing
-      gpuLock->unlock(); });
+        
+      });
     }
     else
     {

@@ -96,7 +96,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
 
   public setDescriptor(descriptor: Record<string, unknown> | undefined) {
     assertDrawCallbacksEnabled();
-    setDescriptorForSkiaView(this._nativeId, descriptor);
+    SkiaViewApi.setDescriptor(this._nativeId, descriptor);
   }
 
   /**

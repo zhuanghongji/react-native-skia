@@ -61,6 +61,9 @@ export type RNSkiaViewProps = ViewProps & {
    * average time it takes to render.
    */
   debug?: boolean;
+  /**
+   * Use experimental native reconciler
+   */
   experimental?: boolean;
   /**
    * Draw callback. Will be called whenever the view is invalidated and

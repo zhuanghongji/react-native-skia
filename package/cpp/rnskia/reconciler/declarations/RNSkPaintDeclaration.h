@@ -36,10 +36,10 @@ public:
     }
   
   void update(jsi::Runtime &runtime) override {
-    if(_parent != nullptr) {
+    if(_parent != nullptr && (color != nullptr || strokeWidth != nullptr)) {
       // Copy parent before updating self. The reason for not keeping
       // a paint object around is that we want to get the values from
-      // the current paint object *after* it was updated before rendering.
+      // the current paint object *after* it was updated before rendering.      
       SkPaint* paint = new SkPaint(*_parent->getObject().get());
       setObject(*paint);
     }
@@ -48,7 +48,7 @@ public:
     }
     if(strokeWidth != nullptr) {
       getObject()->setStrokeWidth(strokeWidth->getValue(runtime));
-    }
+    }    
   }
   
 private:

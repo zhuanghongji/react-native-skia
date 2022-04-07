@@ -40,6 +40,8 @@ public:
   long getAverage() { return static_cast<long>(_average); }
   long getFps() { return _lastFrameCount; }
 
+private:
+  
   void addLastDuration(long duration) {
     _lastDuration = duration;
 
@@ -60,8 +62,6 @@ public:
     }
     _average = _average / _lastDurationsCount;
   }
-
-private:
   
   void tick(time_point<steady_clock> now) {
     auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();

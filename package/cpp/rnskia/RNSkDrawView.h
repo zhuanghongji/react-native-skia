@@ -18,6 +18,7 @@
 #pragma clang diagnostic ignored "-Wdocumentation"
 
 #include <SkRefCnt.h>
+#include <SkCanvas.h>
 
 #pragma clang diagnostic pop
 
@@ -102,7 +103,7 @@ public:
   sk_sp<SkImage> makeImageSnapshot(std::shared_ptr<SkRect> bounds);
 
 protected:
-  void setNativeDrawFunc(std::function<void(const sk_sp<SkPicture>)> drawFunc) {
+  void setNativeDrawFunc(const std::function<void(std::function<void(SkCanvas* canvas)>)>& drawFunc) {
     if(!_gpuDrawingLock->try_lock_for(250ms)) {
       RNSkLogger::logToConsole("Could not lock drawing when clearing drawing function - %i", _nativeId);
     }
@@ -241,12 +242,12 @@ private:
   /**
    Native draw handler
    */
-  std::function<void(const sk_sp<SkPicture>)> _nativeDrawFunc;
+  std::function<void(const std::function<void(SkCanvas* canvas)>&)> _nativeDrawFunc;
   
   /**
    Renderer
    */
-  std::unique_ptr<RNSkReconciler> _renderer;
+  std::unique_ptr<RNSkReconciler> _reconciler;
 };
 
 } // namespace RNSkia
