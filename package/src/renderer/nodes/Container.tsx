@@ -14,4 +14,8 @@ export class Container extends Node {
   draw(ctx: DrawingContext) {
     this.visit(ctx);
   }
+
+  descriptor(): Record<string, unknown> {
+    return { root: true };
+  }
 }

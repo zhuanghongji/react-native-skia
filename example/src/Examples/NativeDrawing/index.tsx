@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Canvas,
   Paint,
@@ -6,7 +6,14 @@ import {
   useDerivedValue,
   useLoop,
 } from "@shopify/react-native-skia";
-import { processColor, Text, useWindowDimensions, View } from "react-native";
+import {
+  processColor,
+  StyleSheet,
+  Switch,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 const NumberOfRects = 1000;
 const Size = 10;
@@ -25,10 +32,21 @@ export const NativeDrawingExample: React.FC = () => {
   );
   const { width } = useWindowDimensions();
 
+  const [isExperimenal, setIsExperimental] = useState(false);
+
   return (
     <View style={{ flex: 1 }}>
-      <Text>{`  💯 🍔 Rendering ${NumberOfRects} rects:`}</Text>
-      <Canvas style={{ flex: 1 }} debug experimental>
+      <View style={styles.panel}>
+        <Text>{`  💯 🍔 Rendering ${NumberOfRects} rects:`}</Text>
+        <View style={styles.row}>
+          <Text>Experimental&nbsp;</Text>
+          <Switch
+            value={isExperimenal}
+            onValueChange={() => setIsExperimental((p) => !p)}
+          />
+        </View>
+      </View>
+      <Canvas style={{ flex: 1 }} debug experimental={isExperimenal}>
         <Paint color={c} />
         {new Array(NumberOfRects).fill(0).map((_, index) => (
           <Rect
@@ -48,3 +66,15 @@ export const NativeDrawingExample: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  panel: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+});

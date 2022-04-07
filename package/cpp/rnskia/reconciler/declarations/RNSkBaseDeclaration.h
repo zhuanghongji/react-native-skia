@@ -23,6 +23,10 @@ public:
   RNSkBaseDeclarationHolder(std::shared_ptr<T> value): _value(value) {};
   const std::shared_ptr<T> getObject() { return _value; };
   
+protected:
+  void setObject(T &value) {
+    _value.reset(&value);
+  }
 private:
   std::shared_ptr<T> _value;
 };

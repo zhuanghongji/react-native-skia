@@ -37,21 +37,17 @@ public:
   
   void update(jsi::Runtime &runtime) override {
     if(_parent != nullptr) {
-      // Copy parent before updating self
-      auto p = new SkPaint(*_parent->getObject().get());
-      internalUpdate(runtime, *p);
-      delete p;
-    } else {
-      internalUpdate(runtime, *getObject());
+      // Copy parent before updating self. The reason for not keeping
+      // a paint object around is that we want to get the values from
+      // the current paint object *after* it was updated before rendering.
+      SkPaint* paint = new SkPaint(*_parent->getObject().get());
+      setObject(*paint);
     }
-  }
-  
-  void internalUpdate(jsi::Runtime &runtime, SkPaint &paint) {
     if(color != nullptr) {
-      paint.setColor(color->getValue(runtime));
+      getObject()->setColor(color->getValue(runtime));
     }
     if(strokeWidth != nullptr) {
-      paint.setStrokeWidth(strokeWidth->getValue(runtime));
+      getObject()->setStrokeWidth(strokeWidth->getValue(runtime));
     }
   }
   
