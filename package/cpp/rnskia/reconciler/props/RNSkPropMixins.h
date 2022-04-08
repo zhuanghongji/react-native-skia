@@ -65,14 +65,20 @@ public:
     if(hasProperty(runtime, props, "strokeWidth")) {
       strokeWidth = std::make_unique<RNSkFloatPropValue>(runtime, props, "strokeWidth");
     }
+    if(hasProperty(runtime, props, "opacity")) {
+      opacity = std::make_unique<RNSkFloatPropValue>(runtime, props, "opacity");
+    }
   }
   
   static bool hasPaintProps(jsi::Runtime& runtime, const jsi::Value& props) {
-    return hasProperty(runtime, props, "color") || hasProperty(runtime, props, "strokeWidth");
+    return hasProperty(runtime, props, "color") ||
+      hasProperty(runtime, props, "strokeWidth") ||
+      hasProperty(runtime, props, "opacity");
   }
   
 protected:
   std::unique_ptr<RNSkIntPropValue> color;
   std::unique_ptr<RNSkFloatPropValue> strokeWidth;
+  std::unique_ptr<RNSkFloatPropValue> opacity;
 };
 }

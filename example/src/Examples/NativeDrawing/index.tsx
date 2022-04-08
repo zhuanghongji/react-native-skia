@@ -17,8 +17,7 @@ import {
   View,
 } from "react-native";
 
-const NumberOfRects = 250;
-const Size = 20;
+const Size = 10;
 
 export const NativeDrawingExample: React.FC = () => {
   const progress = useValue(0);
@@ -35,10 +34,24 @@ export const NativeDrawingExample: React.FC = () => {
 
   const [isExperimenal, setIsExperimental] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [numberOfRects, setNumberOfRects] = useState(500);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.panel}>
-        <Text>{`💯 🍔 Rendering ${NumberOfRects} rects`}</Text>
+        <View style={styles.row}>
+          <Button
+            disabled={isDisabled}
+            title="⬇️"
+            onPress={() => setNumberOfRects((n) => Math.max(0, n - 50))}
+          />
+          <Text>{`${numberOfRects} rects`}</Text>
+          <Button
+            disabled={isDisabled}
+            title="⬆️"
+            onPress={() => setNumberOfRects((n) => n + 50)}
+          />
+        </View>
         <View style={styles.row}>
           <Text>Experimental&nbsp;</Text>
           <Switch
@@ -52,16 +65,21 @@ export const NativeDrawingExample: React.FC = () => {
             onPress={() => {
               setIsDisabled(true);
               progress.current = 0;
-              runTiming(progress, 1, { duration: 5000 }, () => {
-                setIsDisabled(false);
-              });
+              runTiming(progress, 1, { duration: 1000 }, () =>
+                setIsDisabled(false)
+              );
             }}
           />
         </View>
       </View>
-      <Canvas style={{ flex: 1 }} debug experimental={isExperimenal}>
+      <Canvas
+        style={{ flex: 1 }}
+        debug
+        mode={isDisabled ? "continuous" : undefined}
+        experimental={isExperimenal}
+      >
         <Paint color={c} />
-        {new Array(NumberOfRects).fill(0).map((_, index) => (
+        {new Array(numberOfRects).fill(0).map((_, index) => (
           <Rect
             key={index}
             color={
