@@ -6,9 +6,9 @@ import type { SkiaReadonlyValue } from "../values";
 
 import type {
   DrawMode,
-  NativeSkiaViewProps,
+  SkiaViewProps,
   RNSkiaDrawCallback,
-  RNSkiaViewProps,
+  NativeSkiaViewProps,
 } from "./types";
 
 let SkiaViewNativeId = 1000;
@@ -35,8 +35,8 @@ declare global {
 
 const { SkiaViewApi } = global;
 
-export class SkiaView extends React.Component<RNSkiaViewProps> {
-  constructor(props: RNSkiaViewProps) {
+export class SkiaView extends React.Component<SkiaViewProps> {
+  constructor(props: SkiaViewProps) {
     super(props);
     this._skiaId = SkiaViewNativeId++;
     const { onDraw } = props;
@@ -52,7 +52,7 @@ export class SkiaView extends React.Component<RNSkiaViewProps> {
     return this._skiaId;
   }
 
-  componentDidUpdate(prevProps: RNSkiaViewProps) {
+  componentDidUpdate(prevProps: SkiaViewProps) {
     const { onDraw } = this.props;
     if (onDraw !== prevProps.onDraw) {
       assertDrawCallbacksEnabled();
