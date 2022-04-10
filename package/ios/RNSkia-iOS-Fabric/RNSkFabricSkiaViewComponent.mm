@@ -52,8 +52,7 @@ using namespace facebook::react;
       } else {
         [_drawView setDrawingMode:"default"];
       }
-      [_drawView setDebugMode:props.debug];
-      _drawView.backgroundColor = UIColor.whiteColor;
+      [_drawView setDebugMode:props.debug];      
       self.contentView = _drawView;
     }
   }
