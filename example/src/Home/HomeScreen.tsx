@@ -68,6 +68,11 @@ export const HomeScreen = () => {
         route="Neumorphism"
       />
       <HomeScreenButton
+        title="🍏 Wallpaper"
+        description="Wallpaper"
+        route="Wallpaper"
+      />
+      <HomeScreenButton
         title="🎥 Animation"
         description="Animated with Skia"
         route="Animation"
@@ -77,7 +82,6 @@ export const HomeScreen = () => {
         description="Drawing Performance Test"
         route="Performance"
       />
-      <HomeScreenButton title="☀️ GenZ" description="Gen Z Mode" route="GenZ" />
     </ScrollView>
   );
 };

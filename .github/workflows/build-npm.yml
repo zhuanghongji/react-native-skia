@@ -1,10 +1,11 @@
-name: Build NPM Package
+name: Create a release
 on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       WORKING_DIRECTORY: ./
+      INPUT_TOKEN: ${{ secrets.NPM_TOKEN }}
     concurrency:
       group: npm-${{ github.ref }}
       cancel-in-progress: true
@@ -66,9 +67,6 @@ jobs:
           package: ./package/package.json
           token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish documentation
-        run: cd docs; USE_SSH=true yarn deploy
-
       - name: Create Github Release
         uses: ncipollo/release-action@v1
         with:
@@ -79,3 +77,14 @@ jobs:
           generateReleaseNotes: true
           replacesArtifacts: false
           token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Install & Build Docs
+        run: cd package; yarn; cd ../docs; yarn; yarn build;
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com

@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
-import React from "react";
+import type { DependencyList, ReactNode } from "react";
+import { useCallback } from "react";
 
 import type { DrawingContext } from "../DrawingContext";
-import { processPaint, selectPaint } from "../processors";
+import { processPaint } from "../processors";
 import type { AnimatedProps } from "../processors/Animations/Animations";
 import { materialize } from "../processors/Animations/Animations";
 import { isPaint } from "../../skia";
@@ -21,15 +21,15 @@ type OnDrawCallback<P> = (ctx: DrawingContext, props: P, node: Node<P>) => void;
 export const createDrawing = <P,>(cb: OnDrawCallback<P>): DrawingCallback<P> =>
   cb;
 
+export const useDrawing = <P,>(cb: OnDrawCallback<P>, deps?: DependencyList) =>
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useCallback(cb, deps ?? []);
+
 export type DrawingProps<T> = {
   onDraw: DrawingCallback<T>;
   skipProcessing?: boolean;
   drawingType?: string;
   children?: ReactNode | ReactNode[];
-};
-
-export const Drawing = <P,>(props: DrawingProps<P>) => {
-  return <skDrawing {...props} />;
 };
 
 export class DrawingNode<P> extends Node<P> {
@@ -62,25 +62,15 @@ export class DrawingNode<P> extends Node<P> {
     if (this.skipProcessing) {
       this.onDraw(ctx, drawingProps, this);
     } else {
-      const selectedPaint = selectPaint(ctx.paint, drawingProps);
-      processPaint(selectedPaint, ctx.opacity, drawingProps);
-      // to draw only once:
-      // onDraw({ ...ctx, paint: selectedPaint }, children);
-      [
-        selectedPaint,
-        ...this.children
-          .map((child) => {
-            //if (child.type === NodeType.Declaration) {
-            const ret = child.draw(ctx);
-            if (ret) {
-              return ret;
-            }
-            //}
-            return null;
-          })
-          .filter(isPaint),
-      ].forEach((paint) => {
-        this.onDraw({ ...ctx, paint }, drawingProps, this);
+      const declarations = this.visit(ctx);
+      const paint = processPaint(
+        ctx.paint.copy(),
+        ctx.opacity,
+        drawingProps,
+        declarations
+      );
+      [paint, ...declarations.filter(isPaint)].forEach((currentPaint) => {
+        this.onDraw({ ...ctx, paint: currentPaint }, drawingProps, this);
       });
     }
   }

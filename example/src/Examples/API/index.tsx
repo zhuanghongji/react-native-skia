@@ -9,12 +9,14 @@ import { Clipping } from "./Clipping";
 import { Transform } from "./Transform";
 import { ColorFilter } from "./ColorFilter";
 import { Gradients } from "./Gradients";
-import { PathExample } from "./Path2";
+import { PathExample } from "./Path";
 import { Images } from "./Images";
 import { SVG } from "./SVG";
 import { BlendModes } from "./BlendModes";
 import { Data } from "./Data";
+import { PictureExample } from "./Picture";
 import { ImageFilters } from "./ImageFilters";
+import { UseCanvas } from "./UseCanvas";
 
 const Stack = createNativeStackNavigator<Routes>();
 export const API = () => {
@@ -110,6 +112,20 @@ export const API = () => {
         component={Data}
         options={{
           title: "📊 Data",
+        }}
+      />
+      <Stack.Screen
+        name="Picture"
+        component={PictureExample}
+        options={{
+          title: "🖼 Picture",
+        }}
+      />
+      <Stack.Screen
+        name="UseCanvas"
+        component={UseCanvas}
+        options={{
+          title: "↕️ UseCanvas",
         }}
       />
     </Stack.Navigator>

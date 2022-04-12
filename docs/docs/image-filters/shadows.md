@@ -5,12 +5,12 @@ sidebar_label: Shadows
 slug: /image-filters/shadows
 ---
 
-## Drop Shadow
-
 The `DropShadow` image filter is equivalent to its [SVG counterpart](https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/drop-shadow()).
 It creates a filter that draws a drop shadow under the input content.
 A `shadowOnly` property renders the drop shadow, excluding the input content.
+It can also render an inner shadow via the `inner` property.
 
+If you want to render inner shadows to a rounded rectangle, [box shadows](/shapes/box.md) are much faster.
 
 | Name        | Type          |  Description                                                  |
 |:------------|:--------------|:--------------------------------------------------------------|
@@ -18,10 +18,11 @@ A `shadowOnly` property renders the drop shadow, excluding the input content.
 | dy          | `number`      | The Y offset of the shadow.                                   |
 | blur        | `number`      | The blur radius for the shadow                                |
 | color       | `Color`       | The color of the drop shadow                                  |
+| inner?      | `boolean`     | Shadows are drawn within the input content                    |
 | shadowOnly? | `boolean`     | If true, the result does not include the input content        | 
-| children?   | `ImageFilter` | Optional image filter to be applied first                     | 
+| children?   | `ImageFilter` | Optional image filter to be applied first                     |
 
-### Example
+## Drop Shadow
 
 The example below creates two drop shadows.
 It is equivalent to the following CSS notation.
@@ -34,10 +35,8 @@ It is equivalent to the following CSS notation.
 
 ```tsx twoslash
 import {
-  DropShadow,
+  Shadow,
   Fill,
-  Group,
-  Paint,
   RoundedRect,
   Canvas
 } from "@shopify/react-native-skia";
@@ -46,13 +45,10 @@ const Neumorphism = () => {
   return (
     <Canvas style={{ width: 256, height: 256 }}>
       <Fill color="lightblue" />
-      <Group>
-        <Paint>
-          <DropShadow dx={12} dy={12} blur={25} color="#93b8c4" />
-          <DropShadow dx={-12} dy={-12} blur={25} color="#c7f8ff" />
-        </Paint>
-        <RoundedRect x={32} y={32} width={192} height={192} r={32} color="lightblue" />
-      </Group>
+      <RoundedRect x={32} y={32} width={192} height={192} r={32} color="lightblue">
+        <Shadow dx={12} dy={12} blur={25} color="#93b8c4" />
+        <Shadow dx={-12} dy={-12} blur={25} color="#c7f8ff" />
+      </RoundedRect>
     </Canvas>
   );
 };
@@ -64,26 +60,10 @@ const Neumorphism = () => {
 
 ## Inner Shadow
 
-Inner shadows are drawn within the input content.
-
-
-| Name        | Type          |  Description                                                  |
-|:------------|:--------------|:--------------------------------------------------------------|
-| dx          | `number`      | The X offset of the shadow.                                   |
-| dy          | `number`      | The Y offset of the shadow.                                   |
-| blur        | `number`      | The blur radius for the shadow                                |
-| color       | `Color`       | The color of the drop shadow                                  |
-| shadowOnly? | `boolean`     | If true, the result does not include the input content        | 
-| children?   | `ImageFilter` | Optional image filter to be applied first                     | 
-
-### Example
-
 ```tsx twoslash
 import {
-  InnerShadow,
+  Shadow,
   Fill,
-  Group,
-  Paint,
   RoundedRect,
   Canvas
 } from "@shopify/react-native-skia";
@@ -92,13 +72,10 @@ const Neumorphism = () => {
   return (
     <Canvas style={{ width: 256, height: 256 }}>
       <Fill color="lightblue" />
-      <Group>
-        <Paint>
-          <InnerShadow dx={12} dy={12} blur={25} color="#93b8c4" />
-          <InnerShadow dx={-12} dy={-12} blur={25} color="#c7f8ff" />
-        </Paint>
-        <RoundedRect x={32} y={32} width={192} height={192} r={32} color="lightblue" />
-      </Group>
+      <RoundedRect x={32} y={32} width={192} height={192} r={32} color="lightblue">
+        <Shadow dx={12} dy={12} blur={25} color="#93b8c4" inner />
+        <Shadow dx={-12} dy={-12} blur={25} color="#c7f8ff" inner />
+      </RoundedRect>
     </Canvas>
   );
 };
@@ -106,4 +83,4 @@ const Neumorphism = () => {
 
 ### Result
 
-![Drop Shadow](assets/inner-shadow.png)
+![Inner Shadow](assets/inner-shadow.png)

@@ -8,7 +8,6 @@ import {
   API,
   Aurora,
   Breathe,
-  DrawingExample,
   Filters,
   Gooey,
   GraphsScreen,
@@ -18,10 +17,10 @@ import {
   Neumorphism,
   PerformanceDrawingTest,
   NativeDrawingExample,
+  Wallpaper,
   Vertices,
 } from "./Examples";
 import { HomeScreen } from "./Home";
-import { ListExample } from "./Examples/List";
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -71,9 +70,14 @@ const App = () => {
               header: () => null,
             }}
           />
-          <Stack.Screen name="List" component={ListExample} />
           <Stack.Screen name="Neumorphism" component={Neumorphism} />
-          <Stack.Screen name="Drawing" component={DrawingExample} />
+          <Stack.Screen
+            name="Wallpaper"
+            component={Wallpaper}
+            options={{
+              header: () => null,
+            }}
+          />
           <Stack.Screen name="Graphs" component={GraphsScreen} />
           <Stack.Screen name="Animation" component={AnimationExample} />
           <Stack.Screen name="Performance" component={PerformanceDrawingTest} />

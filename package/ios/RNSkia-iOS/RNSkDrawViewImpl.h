@@ -19,14 +19,13 @@
 
 #pragma clang diagnostic pop
 
-@class SkiaDrawView;
-
 class RNSkDrawViewImpl : public RNSkia::RNSkDrawView {
 public:
-  RNSkDrawViewImpl(SkiaDrawView *view,
-                   std::shared_ptr<RNSkia::RNSkPlatformContext> context);
+  RNSkDrawViewImpl(std::shared_ptr<RNSkia::RNSkPlatformContext> context);
   
   void setSize(int width, int height);
+  
+  CALayer* getLayer() { return _layer; };
 
 protected:
   int getWidth() override { return _width * _context->getPixelDensity(); };
@@ -42,8 +41,6 @@ private:
   int _nativeId;
   int _width = -1;
   int _height = -1;
-
-  SkiaDrawView *_view;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"

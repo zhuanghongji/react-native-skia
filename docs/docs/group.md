@@ -23,7 +23,7 @@ It can apply the following operations to its children:
 
 ## Paint Properties
 
-Its children will inherit all paint properties applied to a group.
+Its children will inherit all paint attributes applied to a group. These attributes can be properties like `color` or `style` or children like `<Shader />`, or `<ImageFilter />` for instance ([see painting](/docs/paint/overview)).
 
 ```tsx twoslash
 import {Canvas, Circle, Group} from "@shopify/react-native-skia";
@@ -169,24 +169,21 @@ You can use it to apply effects.
 This is particularly useful to build effects that need to be applied to a group of elements and not one in particular.
 
 ```tsx twoslash
-import {Canvas, Group, Circle, Blur, Defs, Paint, ColorMatrix, usePaintRef} from "@shopify/react-native-skia";
+import {Canvas, Group, Circle, Blur, Paint, ColorMatrix, usePaintRef} from "@shopify/react-native-skia";
 
 const Clip = () => {
   const paint = usePaintRef();
   return (
     <Canvas style={{ flex: 1 }}>
-      {/* Here we use <Defs /> so the paint is not used by the siblings and descendants */}
-      <Defs>
-        <Paint ref={paint}>
-          <ColorMatrix
-            matrix={[
-              1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 18, -7,
-            ]}
-          >
-            <Blur blur={20} />
-          </ColorMatrix>
-        </Paint>
-      </Defs>
+      <Paint ref={paint}>
+        <ColorMatrix
+          matrix={[
+            1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 18, -7,
+          ]}
+        >
+          <Blur blur={20} />
+        </ColorMatrix>
+      </Paint>
       <Group color="lightblue" layer={paint}>
         <Circle cx={0} cy={128} r={128 * 0.95} />
         <Circle
@@ -201,3 +198,44 @@ const Clip = () => {
 ```
 
 ![Rasterize](assets/group/rasterize.png)
+
+
+## Fitbox
+
+The `FitBox` component is based on the `Group` component and allows you to scale drawings to fit into a destination rectangle automatically.
+
+| Name | Type     |  Description                                       |
+|:-----|:---------|:---------------------------------------------------|
+| src  | `SKRect` | Bounding rectangle of the drawing before scaling  |
+| dst  | `SKRect` | Bounding rectangle of the drawing after scale      |
+| fit? | `Fit`    | Method to make the image fit into the rectangle. Value can be `contain`, `fill`, `cover` `fitHeight`, `fitWidth`, `scaleDown`, `none` (default is `contain`) |
+
+### Example
+
+Consider the following SVG export.
+Its bounding source rectangle is `0, 0, 664, 308`:
+
+```xml
+<svg width="664" height="308" viewBox="0 0 664 308" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 170.1 215.5 C 165 222.3..." fill="black"/>
+</svg>
+```
+
+We would like to automatically scale that path to our canvas of size `256 x 256`:
+
+```tsx twoslash
+import {Canvas, FitBox, Path, rect} from "@shopify/react-native-skia";
+
+const Hello = () => {
+  return (
+    <Canvas style={{ width: 256, height: 256 }}>
+      <FitBox src={rect(0, 0, 664, 308)} dst={rect(0, 0, 256, 256)}>
+        <Path path="M 170.1 215.5 C 165 222.3..." />
+      </FitBox>
+    </Canvas>
+  );
+}
+```
+
+![Hello Skia](assets/fitbox/hello.png)
+

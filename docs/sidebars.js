@@ -29,7 +29,7 @@ const sidebars = {
     {
       collapsed: true,
       type: "category",
-      label: "Paint",
+      label: "Painting",
       items: ["paint/overview", "paint/properties"],
     },
     {
@@ -47,7 +47,7 @@ const sidebars = {
         "shapes/ellipses",
         "shapes/vertices",
         "shapes/patch",
-        "shapes/fitbox",
+        "shapes/box",
       ],
     },
     {

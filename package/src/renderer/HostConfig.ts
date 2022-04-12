@@ -3,7 +3,7 @@ import type { HostConfig } from "react-reconciler";
 
 import type { Node, Container, DeclarationProps, DrawingProps } from "./nodes";
 import { DeclarationNode, DrawingNode, NodeType } from "./nodes";
-import { exhaustiveCheck, mapKeys } from "./typeddash";
+import { exhaustiveCheck, shallowEq } from "./typeddash";
 
 const DEBUG = false;
 export const debug = (...args: Parameters<typeof console.log>) => {
@@ -53,24 +53,6 @@ type SkiaHostConfig = HostConfig<
   NoTimeout
 >;
 
-// Shallow eq on props (without children)
-const shallowEq = <P extends Props>(p1: P, p2: P): boolean => {
-  const keys1 = mapKeys(p1);
-  const keys2 = mapKeys(p2);
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
-  for (const key of keys1) {
-    if (key === "children") {
-      continue;
-    }
-    if (p1[key] !== p2[key]) {
-      return false;
-    }
-  }
-  return true;
-};
-
 const allChildrenAreMemoized = (node: Instance) => {
   if (!node.memoizable) {
     return false;
@@ -87,7 +69,7 @@ const bustBranchMemoization = (parent: Node) => {
   if (parent.memoizable) {
     let ancestor: Node | undefined = parent;
     while (ancestor) {
-      ancestor.memoized = false;
+      ancestor.memoized = null;
       ancestor = ancestor.parent;
     }
   }
