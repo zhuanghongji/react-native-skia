@@ -58,6 +58,7 @@ export interface SkiaViewProps extends ViewProps {
    * by the native view.
    */
   onDraw?: RNSkiaDrawCallback;
+  experimental?: boolean;
 }
 
 export class SkiaView extends React.Component<SkiaViewProps> {
