@@ -490,15 +490,15 @@ public:
       int N = n * n;
       int size = 200;
       SkPaint paint;
+      paint.setAntiAlias(true);
       _canvas->save();
       _canvas->rotate((360 * clock) / 4000, size / 2, size / 2);
       for (int i = 0; i < N ; i++) {
-          paint.setColor(i % 2 == 0 ? SK_ColorBLACK : SK_ColorBLACK);
+          paint.setColor(i % 2 == 1 ? SK_ColorBLACK : SK_ColorWHITE);
           float x = ((i % n) * size) / n;
           float y = (floor(i / n) * size) / n;
           float width = size/n;
           float height = size/n;
-          float r = width/2;
           auto rect = SkRect::MakeXYWH(x, y, width, height);
           _canvas->drawRect(rect, paint);
       }
