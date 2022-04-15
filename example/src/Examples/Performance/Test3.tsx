@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Dimensions } from "react-native";
 import {
   Skia,
-  BlendMode,
   SkiaView,
   useDrawCallback,
   ValueApi,
-  vec,
 } from "@shopify/react-native-skia";
 
 const size = 200;
