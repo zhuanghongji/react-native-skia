@@ -17,24 +17,7 @@ export const PerformanceDrawingTest = () => {
     return ref.current?.registerValues([clock]);
   }, [clock]);
   const onDraw = useDrawCallback((canvas) => {
-    const c1 = Skia.Paint();
-    c1.setColor(0xff000000);
-    const c2 = Skia.Paint();
-    c2.setColor(0xffffffff);
-    canvas.save();
-    canvas.rotate((360 * clock.current) / 4000, size / 2, size / 2);
-    [...Array(n * n)].forEach((_, i) => {
-      canvas.drawRect(
-        Skia.XYWHRect(
-          ((i % n) * size) / n,
-          (Math.floor(i / n) * size) / n,
-          size / n,
-          size / n
-        ),
-        i % 2 ? c1 : c2
-      );
-    });
-    canvas.restore();
+    canvas.drawTest(clock.current);
   });
   return <SkiaView ref={ref} style={{ flex: 1 }} onDraw={onDraw} debug />;
 };

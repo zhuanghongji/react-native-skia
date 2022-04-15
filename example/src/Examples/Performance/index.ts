@@ -1,2 +1,2 @@
 //export { PerformanceDrawingTest } from "./PerformanceRects";
-export { PerformanceDrawingTest } from "./Test2";
+export { PerformanceDrawingTest } from "./Test4";

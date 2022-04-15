@@ -27,7 +27,7 @@ export const PerformanceDrawingTest = () => {
             y={(Math.floor(i / n) * size) / n}
             width={size / n}
             height={size / n}
-            color={i % 2 ? "#000" : "#ddd"}
+            color={i % 2 ? 0xff000000 : 0xffff0000}
           />
         ))}
       </Group>

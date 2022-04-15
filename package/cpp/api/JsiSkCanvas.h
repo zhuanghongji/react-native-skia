@@ -483,8 +483,31 @@ public:
     _canvas->drawPicture(picture);
     return jsi::Value::undefined();
   }
+    
+    JSI_HOST_FUNCTION(drawTest) {
+      int clock = arguments[0].asNumber();
+      int n = 39;
+      int N = n * n;
+      int size = 200;
+      SkPaint paint;
+      _canvas->save();
+      _canvas->rotate((360 * clock) / 4000, size / 2, size / 2);
+      for (int i = 0; i < N ; i++) {
+          paint.setColor(i % 2 == 0 ? SK_ColorBLACK : SK_ColorBLACK);
+          float x = ((i % n) * size) / n;
+          float y = (floor(i / n) * size) / n;
+          float width = size/n;
+          float height = size/n;
+          float r = width/2;
+          auto rect = SkRect::MakeXYWH(x, y, width, height);
+          _canvas->drawRect(rect, paint);
+      }
+      _canvas->restore();
+      return jsi::Value::undefined();
+    }
 
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkCanvas, drawPaint),
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkCanvas, drawTest),
+                       JSI_EXPORT_FUNC(JsiSkCanvas, drawPaint),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawLine),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawRect),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawImage),

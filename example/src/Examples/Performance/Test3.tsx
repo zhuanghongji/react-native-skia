@@ -1,3 +1,4 @@
+/* global performance */
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Skia,
@@ -16,14 +17,13 @@ export const PerformanceDrawingTest = () => {
     clock.start();
     return ref.current?.registerValues([clock]);
   }, [clock]);
+  const paint = Skia.Paint();
   const onDraw = useDrawCallback((canvas) => {
-    const c1 = Skia.Paint();
-    c1.setColor(0xff000000);
-    const c2 = Skia.Paint();
-    c2.setColor(0xffffffff);
     canvas.save();
     canvas.rotate((360 * clock.current) / 4000, size / 2, size / 2);
+    const t0 = performance.now();
     [...Array(n * n)].forEach((_, i) => {
+      paint.setColor(i % 2 ? 0xff000000 : 0xffffffff);
       canvas.drawRect(
         Skia.XYWHRect(
           ((i % n) * size) / n,
@@ -31,9 +31,11 @@ export const PerformanceDrawingTest = () => {
           size / n,
           size / n
         ),
-        i % 2 ? c1 : c2
+        paint
       );
     });
+    const t1 = performance.now();
+    console.log(t1 - t0);
     canvas.restore();
   });
   return <SkiaView ref={ref} style={{ flex: 1 }} onDraw={onDraw} debug />;
