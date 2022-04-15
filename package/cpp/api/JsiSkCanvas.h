@@ -495,8 +495,8 @@ public:
       _canvas->rotate((360 * clock) / 4000, size / 2, size / 2);
       for (int i = 0; i < N ; i++) {
           paint.setColor(i % 2 == 1 ? SK_ColorBLACK : SK_ColorWHITE);
-          float x = ((i % n) * size) / n;
-          float y = (floor(i / n) * size) / n;
+          float x = (((i % n) * size) / n);
+          float y = (((i / n) * size) / n);
           float width = size/n;
           float height = size/n;
           auto rect = SkRect::MakeXYWH(x, y, width, height);

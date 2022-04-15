@@ -17,7 +17,10 @@ export const PerformanceDrawingTest = () => {
     return ref.current?.registerValues([clock]);
   }, [clock]);
   const onDraw = useDrawCallback((canvas) => {
+    const t0 = performance.now();
     canvas.drawTest(clock.current);
+    const t1 = performance.now();
+    console.log(t1 - t0);
   });
   return <SkiaView ref={ref} style={{ flex: 1 }} onDraw={onDraw} debug />;
 };
