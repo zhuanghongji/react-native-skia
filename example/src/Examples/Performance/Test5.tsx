@@ -17,24 +17,30 @@ export const PerformanceDrawingTest = () => {
     return ref.current?.registerValues([clock]);
   }, [clock]);
   const onDraw = useDrawCallback((canvas) => {
-    const c1 = Skia.Paint();
-    c1.setColor(0xff000000);
-    const c2 = Skia.Paint();
-    c2.setColor(0xffffffff);
-    canvas.save();
-    canvas.rotate((360 * clock.current) / 4000, size / 2, size / 2);
-    [...Array(n * n)].forEach((_, i) => {
-      canvas.drawRect(
-        Skia.XYWHRect(
-          ((i % n) * size) / n,
-          (Math.floor(i / n) * size) / n,
-          size / n,
-          size / n
-        ),
-        i % 2 ? c1 : c2
-      );
-    });
-    canvas.restore();
+    const cmds = [
+      { cmd: "var", name: "c1", type: "SkPaint" },
+      { cmd: "method", var: "c1", method: "c1", args: [0xff000000] },
+      { cmd: "var", name: "c2", type: "SkPaint" },
+      { cmd: "method", var: "c2", method: "c2", args: [0xffffffff] },
+      { cmd: "method", var: "canvas", method: "save" },
+      {
+        cmd: "method",
+        var: "canvas",
+        method: "rotate",
+        args: [(360 * clock.current) / 4000, size / 2, size / 2],
+      },
+      {
+        cmd: "method",
+        var: "canvas",
+        method: "drawCircle",
+        args: [size / 2, size / 2, size / 2, "c1"],
+      },
+      {
+        cmd: "method",
+        var: "canvas",
+        method: "restore",
+      },
+    ];
   });
   return <SkiaView ref={ref} style={{ flex: 1 }} onDraw={onDraw} debug />;
 };
